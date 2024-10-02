@@ -36,7 +36,7 @@ const JobCard = ({ job }) => {
             <div className="h-12 w-12 rounded-full bg-white">
               {job.companyLogo && (
                 <img 
-                  src={`https://jobsy-azure.vercel.app/uploads/${job.companyLogo}`} 
+                  src={`${import.meta.env.VITE_API_URL}/uploads/${job.companyLogo}`} 
                   alt="logo" 
                   className="h-full w-full object-cover rounded-full" 
                 />

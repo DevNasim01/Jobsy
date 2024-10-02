@@ -8,7 +8,7 @@ const JobArea = () => {
 
   useEffect(() => {
     // Fetch jobs using Axios and log the response
-    axios.get('https://jobsy-azure.vercel.app/api/jobs')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/jobs`)
       .then((response) => {
         console.log('Fetched Jobs:', response.data); // Log the response for debugging
         setJobs(response.data);

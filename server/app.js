@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
 // Middleware to handle CORS
 const allowedOrigins = [
   "https://jobsy-tawny.vercel.app", // Add your front-end origin for production
-  "http://localhost:3000" // Add localhost for development
+  "http://localhost:5173" // Add localhost for development
 ];
 app.use(cors({
   origin: allowedOrigins,

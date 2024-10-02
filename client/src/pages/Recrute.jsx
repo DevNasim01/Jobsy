@@ -70,7 +70,7 @@ const Recrute = () => {
     console.log(data);
     try {
       const response = await axios.post(
-        "https://jobsy-azure.vercel.app/api/submit-job",
+        `${import.meta.env.VITE_API_URL}/api/submit-job`, // Remove curly braces here
         formData,
         {
           headers: {
@@ -114,7 +114,7 @@ const Recrute = () => {
 
   return (
     <main className="w-full flex justify-center">
-      <ScrollArea className="h-[calc(100vh-5rem)] w-[68%] bg-white">
+      <ScrollArea className="h-[calc(100vh-5rem)] w-[70%] bg-white">
         <form
           className="px-24 w-full flex flex-col gap-y-3 py-8"
           onSubmit={handleSubmit(onSubmit)}
