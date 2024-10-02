@@ -70,7 +70,7 @@ const Recrute = () => {
     console.log(data);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/submit-job",
+        "https://jobsy-azure.vercel.app/api/submit-job",
         formData,
         {
           headers: {

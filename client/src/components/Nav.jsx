@@ -19,7 +19,7 @@ function Navbar() {
   ];
 
   return (
-    <nav className="flex h-20 w-full justify-around items-center bg-zinc-950 text-zinc-300 drop-shadow-md">
+    <nav className="flex h-20 w-full justify-around items-center bg-zinc-950 text-zinc-300 drop-shadow-md z-50">
       <Link 
         to="/" 
         className="cursor-pointer" 
