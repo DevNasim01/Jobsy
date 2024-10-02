@@ -77,6 +77,11 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
 });
 
 // Route to fetch all jobs
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the Job Board API");
+});
+
 app.get("/api/jobs", async (req, res) => {
     try {
       const jobs = await Job.find(); // Fetch all jobs from the database
