@@ -10,7 +10,11 @@ const app = express();
 const PORT = 3000;
 
 // Middleware to handle CORS (Cross-Origin Resource Sharing)
-app.use(cors());
+app.use(cors({
+  origin: "https://jobsy-tawny.vercel.app", // Allow your Vercel frontend
+  methods: ["GET", "POST"], // Methods you will use
+  credentials: true, // Enable for cookies, auth headers, etc.
+}));
 // Serve static files from the 'uploads' folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
