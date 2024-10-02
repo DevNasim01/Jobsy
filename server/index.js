@@ -22,6 +22,27 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
+// MongoDB connection
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
+
+
+// Middleware to parse JSON bodies
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 // Ensure that the 'uploads' directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -52,22 +73,6 @@ const upload = multer({
     cb(null, true);
   },
 });
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-  });
 
 // Route to handle form submission
 app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
@@ -104,6 +109,16 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
   }
 });
 
+// Error handling middleware (optional for handling file type/size errors)
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error(err);
+    res.status(err.status || 500).json({ message: err.message });
+  } else {
+    next();
+  }
+});
+
 // Route to fetch all jobs
 app.get("/api/jobs", async (req, res) => {
   try {
@@ -115,23 +130,12 @@ app.get("/api/jobs", async (req, res) => {
   }
 });
 
-// Serve static files from the 'uploads' folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Base route to check the server status
 app.get("/", (req, res) => {
   res.send("Welcome to the Job Board API");
 });
 
-// Error handling middleware (optional for handling file type/size errors)
-app.use((err, req, res, next) => {
-  if (err) {
-    console.error(err);
-    res.status(err.status || 500).json({ message: err.message });
-  } else {
-    next();
-  }
-});
 
 // Start the server
 app.listen(PORT, () => {
