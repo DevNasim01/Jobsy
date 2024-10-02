@@ -1,41 +1,63 @@
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
-require('dotenv').config(); // Load environment variables
+require('dotenv').config(); // Load environment variables from .env file
 const path = require("path");
-const mongoose = require("mongoose"); // Import mongoose
-const Job = require("./models/jobModel"); // Import the Job model
+const mongoose = require("mongoose");
+const fs = require('fs');
+const Job = require("./models/jobModel"); // Assuming you have this model defined in models/jobModel.js
 
 const app = express(); 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
 
-// Middleware to handle CORS (Cross-Origin Resource Sharing)
+// Middleware to handle CORS
+const allowedOrigins = [
+  "https://jobsy-tawny.vercel.app", // Add your front-end origin for production
+  "http://localhost:3000" // Add localhost for development
+];
 app.use(cors({
-  origin: "https://jobsy-tawny.vercel.app", // Allow your Vercel frontend
-  methods: ["GET", "POST"], // Methods you will use
-  credentials: true, // Enable for cookies, auth headers, etc.
+  origin: allowedOrigins,
+  methods: ["GET", "POST"],
+  credentials: true,
 }));
-// Serve static files from the 'uploads' folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Set up Multer storage configuration to store the uploaded files
+// Ensure that the 'uploads' directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+
+// Set up Multer storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Files will be saved to the 'uploads' folder
+    cb(null, "uploads/"); // Files will be saved in 'uploads' folder
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to the file name to avoid duplicates
+    cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid duplicate names
   },
 });
 
-const upload = multer({ storage });
+// File size and type validation
+const upload = multer({
+  storage,
+  limits: { fileSize: 1024 * 1024 * 2 }, // 2MB size limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      const error = new Error("Incorrect file type. Only JPEG, PNG, and GIF allowed.");
+      error.status = 400;
+      return cb(error, false);
+    }
+    cb(null, true);
+  },
+});
 
-// Parse JSON bodies for POST requests (if needed for other endpoints)
+// Middleware to parse JSON bodies
 app.use(express.json());
 
-// MongoDB connection using Mongoose
+// MongoDB connection
 mongoose
-  .connect(process.env.MONGODB_URI, { // Use environment variable for MongoDB URI
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -46,54 +68,68 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
-// Route to handle the form submission
+// Route to handle form submission
 app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
-    const { companyName, jobRole, location, salary, tags, formLink } = req.body;
-    const companyLogo = req.file;
+  const { companyName, jobRole, location, salary, tags, formLink } = req.body;
+  const companyLogo = req.file;
 
-    // Check if the logo is uploaded successfully
-    if (companyLogo) {
-      console.log("Uploaded company logo:", companyLogo.filename);
-    }
+  // Check if the logo is uploaded successfully
+  if (companyLogo) {
+    console.log("Uploaded company logo:", companyLogo.filename);
+  }
 
-    // Check if required fields are present
-    if (!companyName || !jobRole || !location || !salary || !formLink) {
-      return res.status(400).json({ message: "Required fields missing" });
-    }
+  // Basic validation for required fields
+  if (!companyName || !jobRole || !location || !salary || !formLink) {
+    return res.status(400).json({ message: "Required fields missing" });
+  }
 
-    try {
-      const newJob = new Job({
-        companyName,
-        jobRole,
-        location,
-        salary,
-        tags: tags ? tags.split(",") : [],
-        companyLogo: companyLogo ? companyLogo.filename : null,
-        formLink // Save formLink
-      });
+  try {
+    const newJob = new Job({
+      companyName,
+      jobRole,
+      location,
+      salary,
+      tags: tags ? tags.split(",") : [], // Split tags by comma if provided
+      companyLogo: companyLogo ? companyLogo.filename : null, // Save the file name of the uploaded logo
+      formLink,
+    });
 
-      await newJob.save();
-      res.status(200).json({ message: "Job submission successful" });
-    } catch (error) {
-      console.error("Error saving job:", error);
-      res.status(500).json({ message: "Server error. Please try again later." });
-    }
+    // Save the new job to the database
+    await newJob.save();
+    res.status(200).json({ message: "Job submission successful" });
+  } catch (error) {
+    console.error("Error saving job:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
 });
 
 // Route to fetch all jobs
+app.get("/api/jobs", async (req, res) => {
+  try {
+    const jobs = await Job.find(); // Fetch all jobs from the database
+    res.status(200).json(jobs);
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
+// Serve static files from the 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Base route to check the server status
 app.get("/", (req, res) => {
   res.send("Welcome to the Job Board API");
 });
 
-app.get("/api/jobs", async (req, res) => {
-    try {
-      const jobs = await Job.find(); // Fetch all jobs from the database
-      res.status(200).json(jobs);
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-      res.status(500).json({ message: "Server error" });
-    }
+// Error handling middleware (optional for handling file type/size errors)
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error(err);
+    res.status(err.status || 500).json({ message: err.message });
+  } else {
+    next();
+  }
 });
 
 // Start the server
