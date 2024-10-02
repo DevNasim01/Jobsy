@@ -106,19 +106,9 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
 
 // Route to fetch all jobs
 app.get("/api/jobs", async (req, res) => {
-  const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 items per page
   try {
-    const jobs = await Job.find()
-      .skip((page - 1) * limit)
-      .limit(Number(limit)); // Fetch limited number of jobs
-    
-    const totalJobs = await Job.countDocuments(); // Get total job count for pagination
-    
-    res.status(200).json({
-      jobs,
-      totalPages: Math.ceil(totalJobs / limit),
-      currentPage: Number(page),
-    });
+    const jobs = await Job.find(); // Fetch all jobs from the database
+    res.status(200).json(jobs);
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).json({ message: "Server error" });
