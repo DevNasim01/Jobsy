@@ -2,14 +2,17 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.js",
+      "src": "./index.js",
       "use": "@vercel/node"
     }
   ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://sknasimpc:GxUYH3E9urKbRCb7@job-portal.v8z6l.mongodb.net/job-portal"
+  },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/index.js"
+      "src": "/(.*)",
+      "dest": "/"
     }
   ]
 }

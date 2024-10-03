@@ -123,12 +123,22 @@ app.use((err, req, res, next) => {
 app.get("/api/jobs", async (req, res) => {
   try {
     const jobs = await Job.find(); // Fetch all jobs from the database
-    res.status(200).json(jobs);
+
+    // Map the jobs to include the full URL for companyLogo
+    const updatedJobs = jobs.map(job => {
+      return {
+        ...job._doc, // Include all job fields
+        companyLogo: job.companyLogo ? `${req.protocol}://${req.get('host')}/uploads/${job.companyLogo}` : null
+      };
+    });
+
+    res.status(200).json(updatedJobs);
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 // Base route to check the server status

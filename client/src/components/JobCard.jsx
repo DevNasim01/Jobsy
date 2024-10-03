@@ -16,7 +16,7 @@ const JobCard = ({ job }) => {
   
     console.log(job);
     return (
-      <div className="min-h-72 w-[30%] border rounded-2xl p-3 flex flex-col pb-0">
+      <div className="min-h-64 w-[30%] border rounded-2xl p-3 flex flex-col pb-0">
         <div style={{ backgroundColor: color }} className="w-full rounded-2xl py-4">
           <header className="px-3 flex items-center justify-between">
             <h1 className="text-xs bg-white border rounded-xl w-fit px-2 py-1">
@@ -36,7 +36,7 @@ const JobCard = ({ job }) => {
             <div className="h-12 w-12 rounded-full bg-white">
               {job.companyLogo && (
                 <img 
-                  src={`${import.meta.env.VITE_API_URL}/uploads/${job.companyLogo}`} 
+                  src={job.companyLogo} 
                   alt="logo" 
                   className="h-full w-full object-cover rounded-full" 
                 />
@@ -44,7 +44,7 @@ const JobCard = ({ job }) => {
             </div>
           </div>
   
-          <div className="flex px-5 mt-7 gap-2 text-xs flex-wrap">
+          <div className="flex px-5 mt-7 gap-2 text-xs flex-wrap min-h-5">
             {job.tags.map((tag, index) => (
               <p key={index} className="border rounded-xl px-2 py-1 border-black">#{tag}</p>
             ))}
