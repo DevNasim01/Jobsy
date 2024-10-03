@@ -72,11 +72,6 @@ const Recrute = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/submit-job`, // Remove curly braces here
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
       );
 
       if (response.status === 200) {
