@@ -15,12 +15,13 @@ const allowedOrigins = [
   "https://jobsy-mauve.vercel.app", // Add your front-end origin for production
   "http://localhost:5173" // Add localhost for development
 ];
-app.use(cors({
-  origin: allowedOrigins,
+
+const corsConfig = {
+  origin: "*",
   methods: ["GET", "POST"],
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+}
+app.use(cors(corsConfig));
 
 // MongoDB connection
 mongoose
@@ -35,11 +36,13 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
+
 // Middleware to parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the 'uploads' folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Ensure that the 'uploads' directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -72,35 +75,38 @@ const upload = multer({
   },
 });
 
-// POST route to handle job submission
-app.post('/api/submit-job', upload.single('companyLogo'), (req, res) => {
+// Route to handle form submission
+app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
+  const { companyName, jobRole, location, salary, tags, formLink } = req.body;
+  const companyLogo = req.file;
+
+  // Check if the logo is uploaded successfully
+  if (companyLogo) {
+    console.log("Uploaded company logo:", companyLogo.filename);
+  }
+
+  // Basic validation for required fields
+  if (!companyName || !jobRole || !location || !salary || !formLink) {
+    return res.status(400).json({ message: "Required fields missing" });
+  }
+
   try {
-    // Access form fields
-    const { companyName, jobRole, location, salary, tags, formLink } = req.body;
-
-    // Access the file (company logo)
-    const companyLogo = req.file; // Handled by multer
-
-    if (!companyLogo) {
-      return res.status(400).json({ message: 'Company logo is required' });
-    }
-
-    // Handle form data and save to DB or do other operations...
-    console.log({
+    const newJob = new Job({
       companyName,
-      companyLogo: companyLogo.filename, // Save filename or full path to the DB
       jobRole,
       location,
       salary,
-      tags,
+      tags: tags ? tags.split(",") : [], // Split tags by comma if provided
+      companyLogo: companyLogo ? companyLogo.filename : null, // Save the file name of the uploaded logo
       formLink,
     });
 
-    // Send success response
-    return res.status(200).json({ message: 'Job submitted successfully' });
+    // Save the new job to the database
+    await newJob.save();
+    res.status(200).json({ message: "Job submission successful" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    console.error("Error saving job:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
   }
 });
 
@@ -134,10 +140,13 @@ app.get("/api/jobs", async (req, res) => {
   }
 });
 
+
+
 // Base route to check the server status
 app.get("/", (req, res) => {
   res.send("Welcome to the Job Board API");
 });
+
 
 // Start the server
 app.listen(PORT, () => {
