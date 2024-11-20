@@ -9,7 +9,9 @@ import About from "./pages/About";
 import Services from "./pages/Services";
 import { Contact } from "lucide-react";
 import Recrute from "./pages/Recrute";
+import { useState } from "react";
 function App() {
+  const [filteredJobs, setFilteredJobs] = useState([]);
   return (
     <>
       <ClerkLoading>Loading...</ClerkLoading>
@@ -25,10 +27,10 @@ function App() {
             path="/"
             element={
               <div>
-                <FindJob />
+                <FindJob setFilteredJobs={setFilteredJobs} />
                 <div className="flex w-full">
                   <SideBar />
-                  <JobArea />
+                  <JobArea filteredJobs={filteredJobs} />
                 </div>
               </div>
             }

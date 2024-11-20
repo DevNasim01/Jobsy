@@ -90,3 +90,20 @@ p, .Montserrat{
   height: 12px;
   width: 12px;
 }
+
+/* loader animation ---  */
+.loader {
+  width: 200px;
+  height: 28px;
+  --c:#808085 92%,#0000;
+  background: 
+    radial-gradient(circle closest-side,var(--c)) calc(100%/-4) 0,
+    radial-gradient(circle closest-side,var(--c)) calc(100%/4)  0;
+  background-size:calc(100%/2) 100%;
+  animation: l14 1.5s infinite;
+}
+@keyframes l14 {
+    0%   {background-position: calc(100%/-4) 0    ,calc(100%/4) 0}
+    50%  {background-position: calc(100%/-4) -28px,calc(100%/4) 28px}
+    100% {background-position: calc(100%/4)  -28px,calc(3*100%/4) 28px}
+}

@@ -1,7 +1,6 @@
-"use client";
-
 import * as React from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import axios from "axios";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,9 +18,60 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DropDown({ job, title, icone }) {
+export function DropDown({
+  job,
+  title,
+  icone,
+  filterType,
+  filters,
+  setFilters,
+  setFilteredJobs,
+}) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+
+  // Function to handle the API request with multiple filters
+  const fetchFilteredJobs = async (updatedFilters) => {
+    try {
+      // Construct query string from filters
+      const queryString = Object.entries(updatedFilters)
+        .filter(([_, val]) => val) // Include only non-empty filters
+        .map(([key, val]) => `${key}=${encodeURIComponent(val)}`)
+        .join("&");
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/jobs?${queryString}`
+      );
+
+      const data = response.data;
+      console.log("Filtered Response:", data);
+      console.log(`${import.meta.env.VITE_API_URL}/api/jobs?${queryString}`);
+
+      if (data.length === 0) {
+        setFilteredJobs("not-found"); // Notify no matching jobs found
+      } else {
+        setFilteredJobs(data); // Update filtered jobs
+      }
+
+    } catch (error) {
+      setFilteredJobs("error");
+      console.error("Error fetching filtered jobs:", error);
+    }
+  };
+
+  // Handle filter selection
+  const handleSelect = (selectedValue) => {
+    const updatedValue = selectedValue === value ? "" : selectedValue; // Toggle filter value
+    setValue(updatedValue);
+
+    const updatedFilters = {
+      ...filters,
+      [filterType]: updatedValue, // Update the filter type with the selected value
+    };
+
+    setFilters(updatedFilters);
+    fetchFilteredJobs(updatedFilters); // Fetch jobs with updated filters
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -34,9 +84,10 @@ export function DropDown({ job, title, icone }) {
         >
           <div className="flex items-center gap-x-3">
             {icone}
-            {/* Set fixed width to prevent layout shift */}
-            <div className="w-32 truncate text-left"> 
-              {value ? job.find((ele) => ele.value === value)?.label : `Select ${title}`}
+            <div className="w-32 truncate text-left">
+              {value
+                ? job.find((ele) => ele.value === value)?.label
+                : `Select ${title}`}
             </div>
           </div>
           <CaretSortIcon className="ml-2 h-5 w-5 shrink-0 opacity-50" />
@@ -52,11 +103,7 @@ export function DropDown({ job, title, icone }) {
                 <CommandItem
                   key={ele.value}
                   value={ele.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                  // Apply smaller text size for dropdown suggestions
+                  onSelect={handleSelect}
                   className="text-xs"
                 >
                   {ele.label}

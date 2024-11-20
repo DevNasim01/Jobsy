@@ -1,23 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
-import randomColor from "randomcolor";
 
 const JobCard = ({ job }) => {
-    const color = randomColor({
-      luminosity: 'light',
-      alpha: 0.02,
-    });
     
     const formattedDate = new Date(job.createdAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
-  
-    console.log(job);
+
     return (
-      <div className="min-h-64 w-[30%] border rounded-2xl p-3 flex flex-col pb-0">
-        <div style={{ backgroundColor: color }} className="w-full rounded-2xl py-4">
+      <div className="min-h-64 w-[30%] border rounded-2xl p-3 flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500">
+        <div style={{ backgroundColor: job.color }} className="w-full rounded-2xl py-4">
           <header className="px-3 flex items-center justify-between">
             <h1 className="text-xs bg-white border rounded-xl w-fit px-2 py-1">
               {formattedDate}

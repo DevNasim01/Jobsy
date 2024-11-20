@@ -5,14 +5,13 @@ require('dotenv').config(); // Load environment variables from .env file
 const path = require("path");
 const mongoose = require("mongoose");
 const fs = require('fs');
-const Job = require("./models/jobModel"); // Assuming you have this model defined in models/jobModel.js
+const Job = require("./models/jobModel");
 
-const app = express(); 
+const app = express();
 const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
 
 // Middleware to handle CORS
 const allowedOrigins = [
-  "https://jobsy-mauve.vercel.app", // Add your front-end origin for production
   "http://localhost:5173" // Add localhost for development
 ];
 
@@ -21,7 +20,14 @@ const corsConfig = {
   methods: ["GET", "POST"],
   credentials: true,
 }
+
+app.use(express.json());
 app.use(cors(corsConfig));
+// Middleware to parse JSON bodies
+app.use(express.urlencoded({ extended: true }));
+// Serve static files from the 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // MongoDB connection
 mongoose
@@ -35,14 +41,6 @@ mongoose
   .catch((err) => {
     console.error("MongoDB connection error:", err);
   });
-
-
-// Middleware to parse JSON bodies
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from the 'uploads' folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 
 // Ensure that the 'uploads' directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -123,7 +121,7 @@ app.use((err, req, res, next) => {
 // Route to fetch all jobs
 app.get("/api/jobs", async (req, res) => {
   try {
-    const jobs = await Job.find(); // Fetch all jobs from the database
+    const jobs = await Job.find(req.query); // Fetch all jobs from the database
 
     // Map the jobs to include the full URL for companyLogo
     const updatedJobs = jobs.map(job => {
@@ -140,13 +138,58 @@ app.get("/api/jobs", async (req, res) => {
   }
 });
 
+app.post("/api/search-jobs", async (req, res) => {
+  const { jobRole, companyName, location, jobType } = req.body;
+
+  // Initialize an empty query object
+  const query = {};
+
+  // Dynamically add filters based on the request body
+  if (jobRole) {
+    query.jobRole = { $regex: jobRole, $options: "i" }; // Case-insensitive partial match
+  }
+  if (companyName) {
+    query.companyName = { $regex: companyName, $options: "i" };
+  }
+  if (location) {
+    query.location = { $regex: location, $options: "i" };
+  }
+  if (jobType) {
+    query.jobType = { $regex: jobType, $options: "i" };
+  }
+
+  try {
+    // Fetch jobs based on the constructed query
+    const filteredJobs = await Job.find(query);
+
+    // Update the job data to include the full URL for company logos
+    const updatedJobs = filteredJobs.map((job) => ({
+      ...job._doc,
+      companyLogo: job.companyLogo
+        ? `${req.protocol}://${req.get("host")}/uploads/${job.companyLogo}`
+        : null,
+    }));
+
+    res.status(200).json(updatedJobs);
+    console.log("Query:", query);
+  } catch (error) {
+    console.error("Error fetching filtered jobs:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+});
+
+
+
+
+
+
+
 
 
 // Base route to check the server status
 app.get("/", (req, res) => {
   res.send("Welcome to the Job Board API");
 });
-
 
 // Start the server
 app.listen(PORT, () => {

@@ -1,31 +1,80 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import JobCard from "./JobCard";
+import randomColor from "randomcolor";
 
-const JobArea = () => {
+const JobArea = ({ filteredJobs = [] }) => {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Fetch jobs using Axios and log the response
-    axios.get(`${import.meta.env.VITE_API_URL}/api/jobs`)
-      .then((response) => {
-        console.log('Fetched Jobs:', response.data); // Log the response for debugging
-        setJobs(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching jobs:', error); // Log any errors
-      });
-  }, []);
+    const fetchJobs = async () => {
+      setError(false);
+
+      try {
+        let jobsData;
+
+        if (filteredJobs.length) {
+          jobsData = filteredJobs;
+
+          if(filteredJobs === "error") {
+            setError(true);
+            return;
+          }
+        } else {
+          const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/jobs`
+          );
+          jobsData = response.data;
+        }
+
+        const jobsWithColor = jobsData.map((job) => ({
+          ...job,
+          color: randomColor({
+            luminosity: "light",
+            alpha: 0.02,
+          }),
+        }));
+
+        setJobs(jobsWithColor);
+
+        // Set a timeout to handle the loading state
+        const timeoutId = setTimeout(() => {
+          setLoading(false);
+        }, 500);
+
+        // Clear the timeout if the component unmounts
+        return () => clearTimeout(timeoutId);
+      } catch (error) {
+        setLoading(false);
+        console.error("Error fetching jobs:", error);
+        setError(true);
+      }
+    };
+
+    fetchJobs();
+  }, [filteredJobs]);
 
   return (
-    <section className="h-[calc(100vh-11rem)] w-full flex flex-col gap-y-10 overflow-auto pb-10">
+    <section className="h-[calc(100vh-11rem)] w-full flex flex-col gap-y-10 overflow-auto pb-10 relative">
       <header className="flex items-center justify-between mx-10 mt-8">
         <h1 className="text-2xl font-medium">
-          Recommended Job <span className="text-lg border px-3 py-2 rounded-md">{jobs.length}</span>
+          Recommended Job{" "}
+          <span className="text-lg border px-3 py-2 rounded-md">
+            {jobs.length}
+          </span>
         </h1>
         <div className="flex items-center gap-2">
-          <h1 className="text-sm">sorted by: </h1>
+          <h1 className="text-sm">Sorted by:</h1>
           <Select>
             <SelectTrigger className="w-[100px]">
               <SelectValue placeholder="Select" className="Montserrat" />
@@ -41,11 +90,36 @@ const JobArea = () => {
       </header>
 
       <section className="px-5 flex gap-8 flex-wrap justify-center">
-        {jobs.map((job) => (
-          <JobCard key={job._id} job={job} />
-        ))}
+        {loading ? (
+          <div className="h-full absolute w-full top-0 flex justify-center items-center flex-col z-10 gap-2">
+            <p className="text-lg font-light">Please wait...</p>
+            <Loader />
+          </div>
+        ) : filteredJobs === "not-found" ? (
+          <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
+            <p className="text-gray-500 font-medium text-xl">No jobs found.</p>
+            <p className="font-medium text-sm">Try adjusting your filters.</p>
+          </div>
+        ) : error ? (
+          <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
+            <p className="text-red-600 font-medium text-xl">
+              Something went wrong...
+            </p>
+            <i className="fa-regular fa-face-sad-tear text-8xl my-3 text-red-600"></i>
+            <p className="font-medium text-sm">Try refreshing the page.</p>
+          </div>
+        ) : (
+          jobs.map((job) => <JobCard key={job._id} job={job} />)
+        )}
       </section>
     </section>
+  );
+};
+
+const Loader = () => {
+  return (
+    /* HTML: <div class="loader"></div> */
+    <div className="loader"></div>
   );
 };
 

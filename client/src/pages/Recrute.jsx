@@ -18,7 +18,10 @@ const formSchema = z.object({
   location: z.string().min(1, "Location is required"),
   salary: z.number().min(1, "Salary must be a positive number"),
   tags: z.string().optional(),
-  formLink: z.string().url("Must be a valid URL").min(1, "Apply link is required"),
+  formLink: z
+    .string()
+    .url("Must be a valid URL")
+    .min(1, "Apply link is required"),
 });
 
 const Recrute = () => {
@@ -71,7 +74,7 @@ const Recrute = () => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/submit-job`, // Remove curly braces here
-        formData,
+        formData
       );
 
       if (response.status === 200) {
@@ -93,10 +96,13 @@ const Recrute = () => {
       toast({
         title: <p className="text-xl font-semibold">Error</p>,
         description: (
-          <div className="flex gap-x-2 items-center">
-            <h1 className="text-sm font-light">Job submission failed</h1>
-            <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
-          </div>
+          <>
+            <div className="flex gap-x-2 items-center">
+              <h1 className="text-sm font-light">Job submission failed</h1>
+              <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
+            </div>
+            <p className="text-xs font-light">{error.response.data.message}</p>
+          </>
         ),
         variant: "destructive",
         className: "bg-white border text-black max-w-sm",

@@ -3,7 +3,9 @@ import { DropDown } from './DropDown';
 import rangeSlider from 'range-slider-input';
 import 'range-slider-input/dist/style.css';
 
-const FindJob = () => {
+const FindJob = ({setFilteredJobs}) => {
+  const [filters, setFilters] = React.useState({});
+
   const job = [
     { value: "software_developer", label: "Software Developer" },
     { value: "data_scientist", label: "Data Scientist" },
@@ -118,24 +120,33 @@ const FindJob = () => {
     { value: "jakarta", label: "Jakarta, Indonesia" },
   ];
 
-  const experienceLevels = [
-    { value: "internship", label: "Internship (0 - 3 months)" },
-    { value: "entry_3_6_months", label: "Entry Level (3 - 6 months)" },
-    { value: "entry_6_12_months", label: "Entry Level (6 - 12 months)" },
-    { value: "junior_1_2_years", label: "Junior (1 - 2 years)" },
-    { value: "junior_2_3_years", label: "Junior (2 - 3 years)" },
-    { value: "mid_3_5_years", label: "Mid-Level (3 - 5 years)" },
-    { value: "mid_5_7_years", label: "Mid-Level (5 - 7 years)" },
-    { value: "senior_7_10_years", label: "Senior (7 - 10 years)" },
-    { value: "senior_10_plus_years", label: "Senior (10+ years)" },
-    { value: "lead_12_plus_years", label: "Lead (12+ years)" },
-    { value: "expert_15_plus_years", label: "Expert (15+ years)" },
-    { value: "managerial_2_5_years", label: "Managerial (2 - 5 years)" },
-    { value: "managerial_5_10_years", label: "Managerial (5 - 10 years)" },
-    { value: "managerial_10_plus_years", label: "Managerial (10+ years)" },
-    { value: "freelancer", label: "Freelancer (varies)" },
-    { value: "consultant", label: "Consultant (varies)" }
-  ];
+  const companyNames = [
+    { value: "google", label: "Google" },
+    { value: "microsoft", label: "Microsoft" },
+    { value: "amazon", label: "Amazon" },
+    { value: "facebook", label: "Meta (Facebook)" },
+    { value: "apple", label: "Apple" },
+    { value: "netflix", label: "Netflix" },
+    { value: "tesla", label: "Tesla" },
+    { value: "spotify", label: "Spotify" },
+    { value: "adobe", label: "Adobe" },
+    { value: "salesforce", label: "Salesforce" },
+    { value: "oracle", label: "Oracle" },
+    { value: "ibm", label: "IBM" },
+    { value: "intel", label: "Intel" },
+    { value: "nvidia", label: "NVIDIA" },
+    { value: "samsung", label: "Samsung" },
+    { value: "cisco", label: "Cisco" },
+    { value: "zoom", label: "Zoom" },
+    { value: "slack", label: "Slack" },
+    { value: "airbnb", label: "Airbnb" },
+    { value: "uber", label: "Uber" },
+    { value: "lyft", label: "Lyft" },
+    { value: "shopify", label: "Shopify" },
+    { value: "stripe", label: "Stripe" },
+    { value: "snapchat", label: "Snap Inc." },
+    { value: "tiktok", label: "TikTok" },
+  ];  
   
   const jobTypes = [
     { value: "full_time", label: "Full-time" },
@@ -188,10 +199,14 @@ const FindJob = () => {
   return (
     <>
       <nav className="flex h-24 items-center px-10 bg-zinc-800 text-zinc-300">
-        <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-lg"></i>} />
-        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-lg"></i>} />
-        <DropDown job={experienceLevels} title="Experience" icone={<i className="fa-solid fa-briefcase text-lg"></i>} />
-        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-lg"></i>} />
+        <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-lg"></i>} filterType="jobRole" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-lg"></i>} filterType="Location" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building"></i>} filterType="companyName" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-lg"></i>} filterType="jobTypes" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
         <div className="w-full px-5 h-full">
           <div className="text-nowrap flex justify-between w-full mt-5 gap-x-8 items-center">
             <h1>Salary range</h1>
