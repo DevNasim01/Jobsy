@@ -68,9 +68,7 @@ const FindJob = ({setFilteredJobs}) => {
   ];
   
   const workLocations = [
-    { value: "remote", label: "Remote" },
-    { value: "on_site", label: "On-site" },
-    { value: "hybrid", label: "Hybrid" },
+    { value: "kolkata", label: "Kolkata"},
     { value: "new_york", label: "New York, USA" },
     { value: "san_francisco", label: "San Francisco, USA" },
     { value: "london", label: "London, UK" },

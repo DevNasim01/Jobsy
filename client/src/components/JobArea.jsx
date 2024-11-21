@@ -23,20 +23,30 @@ const JobArea = ({ filteredJobs = [] }) => {
       try {
         let jobsData;
 
-        if (filteredJobs.length) {
-          jobsData = filteredJobs;
-
-          if(filteredJobs === "error") {
+        // Use filteredJobs if provided
+        if (filteredJobs.length || filteredJobs === "not-found" || filteredJobs === "error") {
+          if (filteredJobs === "error") {
             setError(true);
+            setJobs([]);
+            setLoading(false);
             return;
           }
+          if (filteredJobs === "not-found") {
+            setJobs([]);
+            setLoading(false);
+            return;
+          }
+
+          jobsData = filteredJobs;
         } else {
+          // Otherwise, fetch all jobs from the API
           const response = await axios.get(
             `${import.meta.env.VITE_API_URL}/api/jobs`
           );
           jobsData = response.data;
         }
 
+        // Add random color to jobs
         const jobsWithColor = jobsData.map((job) => ({
           ...job,
           color: randomColor({
@@ -46,14 +56,7 @@ const JobArea = ({ filteredJobs = [] }) => {
         }));
 
         setJobs(jobsWithColor);
-
-        // Set a timeout to handle the loading state
-        const timeoutId = setTimeout(() => {
-          setLoading(false);
-        }, 500);
-
-        // Clear the timeout if the component unmounts
-        return () => clearTimeout(timeoutId);
+        setLoading(false);
       } catch (error) {
         setLoading(false);
         console.error("Error fetching jobs:", error);
@@ -95,11 +98,6 @@ const JobArea = ({ filteredJobs = [] }) => {
             <p className="text-lg font-light">Please wait...</p>
             <Loader />
           </div>
-        ) : filteredJobs === "not-found" ? (
-          <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
-            <p className="text-gray-500 font-medium text-xl">No jobs found.</p>
-            <p className="font-medium text-sm">Try adjusting your filters.</p>
-          </div>
         ) : error ? (
           <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
             <p className="text-red-600 font-medium text-xl">
@@ -107,6 +105,11 @@ const JobArea = ({ filteredJobs = [] }) => {
             </p>
             <i className="fa-regular fa-face-sad-tear text-8xl my-3 text-red-600"></i>
             <p className="font-medium text-sm">Try refreshing the page.</p>
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
+            <p className="text-gray-500 font-medium text-xl">No jobs found.</p>
+            <p className="font-medium text-sm">Try adjusting your filters.</p>
           </div>
         ) : (
           jobs.map((job) => <JobCard key={job._id} job={job} />)

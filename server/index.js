@@ -78,6 +78,10 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
   const { companyName, jobRole, location, salary, tags, formLink } = req.body;
   const companyLogo = req.file;
 
+  // Helper function to process strings
+  const processString = (str) =>
+    encodeURIComponent(str.trim().toLowerCase().replace(/\s+/g, "_"));
+
   // Check if the logo is uploaded successfully
   if (companyLogo) {
     console.log("Uploaded company logo:", companyLogo.filename);
@@ -90,13 +94,15 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
 
   try {
     const newJob = new Job({
-      companyName,
-      jobRole,
-      location,
-      salary,
-      tags: tags ? tags.split(",") : [], // Split tags by comma if provided
+      companyName: processString(companyName),
+      jobRole: processString(jobRole),
+      location: processString(location),
+      salary: processString(salary),
+      tags: tags
+        ? tags.split(",").map((tag) => processString(tag)) // Process each tag
+        : [],
       companyLogo: companyLogo ? companyLogo.filename : null, // Save the file name of the uploaded logo
-      formLink,
+      formLink: encodeURIComponent(formLink.trim()), // URL-encode the form link
     });
 
     // Save the new job to the database
@@ -107,6 +113,7 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
     res.status(500).json({ message: "Server error. Please try again later." });
   }
 });
+
 
 // Error handling middleware (optional for handling file type/size errors)
 app.use((err, req, res, next) => {
@@ -123,11 +130,25 @@ app.get("/api/jobs", async (req, res) => {
   try {
     const jobs = await Job.find(req.query); // Fetch all jobs from the database
 
-    // Map the jobs to include the full URL for companyLogo
+    // Helper function to format strings
+    const formatString = (str) =>
+      str
+        .replace(/_/g, " ") // Replace underscores with spaces
+        .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
+
+    // Map the jobs to include the full URL for companyLogo and format fields
     const updatedJobs = jobs.map(job => {
       return {
         ...job._doc, // Include all job fields
-        companyLogo: job.companyLogo ? `${req.protocol}://${req.get('host')}/uploads/${job.companyLogo}` : null
+        companyName: formatString(job.companyName),
+        jobRole: formatString(job.jobRole),
+        location: formatString(job.location),
+        salary: decodeURIComponent(job.salary), // Decode the URL-encoded salary
+        tags: job.tags.map((tag) => formatString(tag)), // Format each tag
+        companyLogo: job.companyLogo
+          ? `${req.protocol}://${req.get('host')}/uploads/${job.companyLogo}`
+          : null,
+        formLink: decodeURIComponent(job.formLink) // Decode the URL-encoded form link
       };
     });
 
@@ -137,52 +158,6 @@ app.get("/api/jobs", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-app.post("/api/search-jobs", async (req, res) => {
-  const { jobRole, companyName, location, jobType } = req.body;
-
-  // Initialize an empty query object
-  const query = {};
-
-  // Dynamically add filters based on the request body
-  if (jobRole) {
-    query.jobRole = { $regex: jobRole, $options: "i" }; // Case-insensitive partial match
-  }
-  if (companyName) {
-    query.companyName = { $regex: companyName, $options: "i" };
-  }
-  if (location) {
-    query.location = { $regex: location, $options: "i" };
-  }
-  if (jobType) {
-    query.jobType = { $regex: jobType, $options: "i" };
-  }
-
-  try {
-    // Fetch jobs based on the constructed query
-    const filteredJobs = await Job.find(query);
-
-    // Update the job data to include the full URL for company logos
-    const updatedJobs = filteredJobs.map((job) => ({
-      ...job._doc,
-      companyLogo: job.companyLogo
-        ? `${req.protocol}://${req.get("host")}/uploads/${job.companyLogo}`
-        : null,
-    }));
-
-    res.status(200).json(updatedJobs);
-    console.log("Query:", query);
-  } catch (error) {
-    console.error("Error fetching filtered jobs:", error);
-    res.status(500).json({ message: "Server error. Please try again later." });
-  }
-});
-
-
-
-
-
-
 
 
 
