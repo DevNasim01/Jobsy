@@ -1,24 +1,55 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, border }) => {
   const formattedDate = new Date(job.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
+  const [isBookmarked, setIsBookmarked] = useState(() => {
+    // Check if the job is already bookmarked
+    const savedJobs = JSON.parse(localStorage.getItem("savedJobs")) || [];
+    return savedJobs.some((savedJob) => savedJob.id === job._id);
+  });
+
+  const handleBookmark = () => {
+    const savedJobs = JSON.parse(localStorage.getItem("savedJobs")) || [];
+    const isAlreadySaved = savedJobs.some((savedJob) => savedJob.id === job._id);
+
+    if (isAlreadySaved) {
+      // Remove the job if already saved
+      const updatedJobs = savedJobs.filter((savedJob) => savedJob.id !== job._id);
+      localStorage.setItem("savedJobs", JSON.stringify(updatedJobs));
+    } else {
+      // Add the job if not saved
+      const clickedDate = new Date().toLocaleDateString("en-US");
+      const newJob = { id: job._id, date: clickedDate };
+      localStorage.setItem("savedJobs", JSON.stringify([...savedJobs, newJob]));
+    }
+
+    // Toggle the bookmarked state
+    setIsBookmarked(!isBookmarked);
+  };
+
   return (
-    <div className="min-h-64 w-[30%] border rounded-2xl p-3 flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500">
+    <div className={`min-h-64 w-[30%] border ${border && 'border-black'} rounded-2xl p-3 flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500`}>
       <div
         style={{ backgroundColor: job.color }}
-        className="w-full rounded-2xl py-4"
+        className="w-full rounded-2xl py-4 h-full"
       >
         <header className="px-3 flex items-center justify-between">
-          <h1 className="text-xs bg-white border rounded-xl w-fit px-2 py-1">
+          <h1 className={`text-xs bg-white border rounded-xl w-fit px-2 py-1`}>
             {formattedDate}
           </h1>
-          <i className="fa-regular fa-bookmark bg-white rounded-full h-10 w-10 grid place-items-center text-xl"></i>
+          <i
+            className={`${
+              isBookmarked ? "fa-solid" : "fa-regular"
+            } fa-bookmark bg-white rounded-full h-10 w-10 grid place-items-center text-xl cursor-pointer`}
+            onClick={handleBookmark}
+          ></i>
         </header>
 
         <div className="px-5 flex items-end mt-3 justify-between">
@@ -57,9 +88,13 @@ const JobCard = ({ job }) => {
           <h1>
             <span className="font-serif">₹</span>
             {job.salary >= 100000 ? (
-              <>{(job.salary / 100).toFixed(2)} <span className="text-sm">LPA</span></>
+              <>
+                {(job.salary / 100).toFixed(2)} <span className="text-sm">LPA</span>
+              </>
             ) : (
-              <>{job.salary} <span className="text-sm">K/month</span></>
+              <>
+                {job.salary} <span className="text-sm">K/month</span>
+              </>
             )}
           </h1>
 
@@ -67,8 +102,6 @@ const JobCard = ({ job }) => {
         </header>
 
         <Link target="_blank" to={job.formLink}>
-          {" "}
-          {/* Wrap the Button with Link */}
           <Button className="rounded-xl Poppins text-sm">Apply</Button>
         </Link>
       </div>

@@ -173,8 +173,12 @@ const SideBar = ({ setFilteredJobs }) => {
             ))}
           </div>
 
-          <div className="border-t mt-5 py-5">
-            <ComboboxPopover />
+          <div className="border-t mt-5 py-2">
+            <h1 className="px-2 flex gap-2 items-center justify-center text-sm">
+              2024 <br />
+              <i className="fa-regular fa-copyright"></i>All rights reserved.
+            </h1>
+            
           </div>
         </div>
       </ScrollArea>

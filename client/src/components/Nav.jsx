@@ -1,30 +1,34 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
-import { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom"; // Import useLocation to get the current path
 
-function Navbar({setFilteredJobs}) {
+function Navbar({ setFilteredJobs }) {
   const [activeItem, setActiveItem] = useState(0); // Default to the first item (index 0)
 
+  const location = useLocation(); // Get the current location (path)
+  
   const navItems = [
-    { label: "Find Job", path: "/" }, // Define paths for navigation
+    { label: "Find Job", path: "/" },
     { label: "Recrute", path: "/recrute" },
+    { label: "Saved", path: "/saved" },
     { label: "About", path: "/about" },
-    { label: "Services", path: "/services" },
     { label: "Contact", path: "/contact" },
   ];
 
+  useEffect(() => {
+    // Check the current location path and set active item accordingly
+    const currentPath = location.pathname;
+    const activeIndex = navItems.findIndex(item => item.path === currentPath);
+    setActiveItem(activeIndex !== -1 ? activeIndex : 0); // Set active index or default to 0
+  }, [location, navItems]); // Re-run the effect when the location changes
+
   return (
     <nav className="flex h-20 w-full justify-around items-center bg-zinc-950 text-zinc-300 drop-shadow-md z-50">
-      <Link 
-        to="/" 
-        className="cursor-pointer" 
+      <Link
+        to="/"
+        className="cursor-pointer"
         onClick={() => {
-          setActiveItem(0); 
+          setActiveItem(0);
           setFilteredJobs([]);
         }} // Set active item on logo click
       >
@@ -33,7 +37,7 @@ function Navbar({setFilteredJobs}) {
 
       <div className="flex space-x-8 justify-center text-sm h-full items-end">
         {navItems.map((item, index) => (
-          <Link 
+          <Link
             key={index}
             to={item.path}
             className={`py-4 border-b-2 px-2 transition-colors duration-300 Poppins ${
