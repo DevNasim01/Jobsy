@@ -7,7 +7,7 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom"; // Import Link
 
-function Navbar() {
+function Navbar({setFilteredJobs}) {
   const [activeItem, setActiveItem] = useState(0); // Default to the first item (index 0)
 
   const navItems = [
@@ -23,7 +23,10 @@ function Navbar() {
       <Link 
         to="/" 
         className="cursor-pointer" 
-        onClick={() => setActiveItem(0)} // Set active item on logo click
+        onClick={() => {
+          setActiveItem(0); 
+          setFilteredJobs([]);
+        }} // Set active item on logo click
       >
         Logo
       </Link>

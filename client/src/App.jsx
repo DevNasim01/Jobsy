@@ -29,7 +29,7 @@ function App() {
               <div>
                 <FindJob setFilteredJobs={setFilteredJobs} />
                 <div className="flex w-full">
-                  <SideBar />
+                  <SideBar setFilteredJobs={setFilteredJobs}/>
                   <JobArea filteredJobs={filteredJobs} />
                 </div>
               </div>

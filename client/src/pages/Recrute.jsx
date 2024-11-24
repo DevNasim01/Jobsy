@@ -15,6 +15,7 @@ const formSchema = z.object({
     .any()
     .refine((file) => file && file[0], "Company logo is required"),
   jobRole: z.string().min(1, "Job role is required"),
+  jobType: z.string().min(1, "Job type is required"),
   location: z.string().min(1, "Location is required"),
   salary: z.number().min(1, "Salary must be a positive number"),
   tags: z.string().optional(),
@@ -63,6 +64,7 @@ const Recrute = () => {
     formData.append("companyName", data.companyName);
     formData.append("companyLogo", data.companyLogo[0]);
     formData.append("jobRole", data.jobRole);
+    formData.append("jobType", data.jobType); 
     formData.append("location", data.location);
     formData.append("salary", data.salary);
     if (data.tags) {
@@ -185,6 +187,25 @@ const Recrute = () => {
             {errors.jobRole && (
               <p className="text-red-500 text-xs mt-1">
                 {errors.jobRole.message}
+              </p>
+            )}
+          </div>
+
+          {/* Job Type */}
+          <div>
+            <label htmlFor="jobType" className={labelClasses}>
+              Job Type
+            </label>
+            <Input
+              id="jobType"
+              className={inputClasses}
+              type="text"
+              {...register("jobType")}
+              placeholder="e.g. Full-time, Part-time"
+            />
+            {errors.jobType && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.jobType.message}
               </p>
             )}
           </div>

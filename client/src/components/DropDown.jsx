@@ -26,17 +26,27 @@ export function DropDown({
   filters,
   setFilters,
   setFilteredJobs,
+  salaryRange,
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+  const [prevSalaryRange, setPrevSalaryRange] = React.useState(salaryRange);
 
-  // Function to handle the API request with multiple filters
+  // Debounced function for API call
+  const debouncedFetch = React.useMemo(
+    () =>
+      debounce((updatedFilters) => {
+        fetchFilteredJobs(updatedFilters);
+      }, 1000),
+    []
+  );
+  
+
   const fetchFilteredJobs = async (updatedFilters) => {
     try {
-      // Construct query string from filters
       const queryString = Object.entries(updatedFilters)
-        .filter(([_, val]) => val) // Include only non-empty filters
-        .map(([key, val]) => `${key}=${encodeURIComponent(val)}`)
+        .filter(([_, val]) => val)
+        .map(([key, val]) => `${key}=${val}`)
         .join("&");
 
       const response = await axios.get(
@@ -44,34 +54,54 @@ export function DropDown({
       );
 
       const data = response.data;
-      console.log("Filtered Response:", data);
       console.log(`${import.meta.env.VITE_API_URL}/api/jobs?${queryString}`);
 
       if (data.length === 0) {
-        setFilteredJobs("not-found"); // Notify no matching jobs found
+        setFilteredJobs("not-found");
       } else {
-        setFilteredJobs(data); // Update filtered jobs
+        setFilteredJobs(data);
       }
-
     } catch (error) {
       setFilteredJobs("error");
       console.error("Error fetching filtered jobs:", error);
     }
   };
 
+  // Track salaryRange changes
+  React.useEffect(() => {
+    if (
+      salaryRange &&
+      salaryRange.length === 2 &&
+      (prevSalaryRange[0] !== salaryRange[0] ||
+        prevSalaryRange[1] !== salaryRange[1])
+    ) {
+      const updatedFilters = {
+        ...filters,
+        salary: `${salaryRange[0]}-${salaryRange[1]}`,
+      };
+  
+      setPrevSalaryRange(salaryRange); // Update only after detecting a change
+      setFilters(updatedFilters);
+      debouncedFetch(updatedFilters); // Call the debounced function
+    }
+  }, [salaryRange]); // Keep dependencies minimal
+  
+  
+
   // Handle filter selection
   const handleSelect = (selectedValue) => {
-    const updatedValue = selectedValue === value ? "" : selectedValue; // Toggle filter value
+    const updatedValue = selectedValue === value ? "" : selectedValue;
     setValue(updatedValue);
-
+  
     const updatedFilters = {
       ...filters,
-      [filterType]: updatedValue, // Update the filter type with the selected value
+      [filterType]: updatedValue,
     };
-
+  
     setFilters(updatedFilters);
-    fetchFilteredJobs(updatedFilters); // Fetch jobs with updated filters
+    debouncedFetch(updatedFilters); // Use the debounced function here too
   };
+  
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -121,4 +151,13 @@ export function DropDown({
       </PopoverContent>
     </Popover>
   );
+}
+
+// Debounce utility function
+function debounce(func, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
 }

@@ -68,55 +68,72 @@ const FindJob = ({setFilteredJobs}) => {
   ];
   
   const workLocations = [
-    { value: "kolkata", label: "Kolkata"},
-    { value: "new_york", label: "New York, USA" },
-    { value: "san_francisco", label: "San Francisco, USA" },
-    { value: "london", label: "London, UK" },
-    { value: "berlin", label: "Berlin, Germany" },
-    { value: "paris", label: "Paris, France" },
-    { value: "tokyo", label: "Tokyo, Japan" },
-    { value: "sydney", label: "Sydney, Australia" },
-    { value: "toronto", label: "Toronto, Canada" },
+    // India Cities
+    { value: "bangalore,india", label: "Bangalore, India" },
+    { value: "delhi,india", label: "Delhi, India" },
+    { value: "mumbai,india", label: "Mumbai, India" },
+    { value: "kolkata,india", label: "Kolkata, India" },
+    { value: "chennai,india", label: "Chennai, India" },
+    { value: "hyderabad,india", label: "Hyderabad, India" },
+    { value: "pune,india", label: "Pune, India" },
+    { value: "ahmedabad,india", label: "Ahmedabad, India" },
+    { value: "surat,india", label: "Surat, India" },
+    { value: "jaipur,india", label: "Jaipur, India" },
+    { value: "lucknow,india", label: "Lucknow, India" },
+    { value: "nagpur,india", label: "Nagpur, India" },
+    { value: "indore,india", label: "Indore, India" },
+    { value: "bhopal,india", label: "Bhopal, India" },
+    { value: "patna,india", label: "Patna, India" },
+    { value: "kanpur,india", label: "Kanpur, India" },
+  
+    // Outsider Cities
+    { value: "new_york,usa", label: "New York, USA" },
+    { value: "san_francisco,usa", label: "San Francisco, USA" },
+    { value: "london,uk", label: "London, UK" },
+    { value: "berlin,germany", label: "Berlin, Germany" },
+    { value: "paris,france", label: "Paris, France" },
+    { value: "tokyo,japan", label: "Tokyo, Japan" },
+    { value: "sydney,australia", label: "Sydney, Australia" },
+    { value: "toronto,canada", label: "Toronto, Canada" },
     { value: "singapore", label: "Singapore" },
-    { value: "dubai", label: "Dubai, UAE" },
-    { value: "bangalore", label: "Bangalore, India" },
-    { value: "delhi", label: "Delhi, India" },
-    { value: "mumbai", label: "Mumbai, India" },
-    { value: "shanghai", label: "Shanghai, China" },
+    { value: "dubai,uae", label: "Dubai, UAE" },
+    { value: "shanghai,china", label: "Shanghai, China" },
     { value: "hong_kong", label: "Hong Kong" },
-    { value: "amsterdam", label: "Amsterdam, Netherlands" },
-    { value: "zurich", label: "Zurich, Switzerland" },
-    { value: "dublin", label: "Dublin, Ireland" },
-    { value: "barcelona", label: "Barcelona, Spain" },
-    { value: "moscow", label: "Moscow, Russia" },
-    { value: "mexico_city", label: "Mexico City, Mexico" },
-    { value: "buenos_aires", label: "Buenos Aires, Argentina" },
-    { value: "sao_paulo", label: "São Paulo, Brazil" },
-    { value: "cape_town", label: "Cape Town, South Africa" },
-    { value: "cairo", label: "Cairo, Egypt" },
-    { value: "istanbul", label: "Istanbul, Turkey" },
-    { value: "kuala_lumpur", label: "Kuala Lumpur, Malaysia" },
-    { value: "seoul", label: "Seoul, South Korea" },
-    { value: "los_angeles", label: "Los Angeles, USA" },
-    { value: "chicago", label: "Chicago, USA" },
-    { value: "boston", label: "Boston, USA" },
-    { value: "washington_dc", label: "Washington DC, USA" },
-    { value: "atlanta", label: "Atlanta, USA" },
-    { value: "vancouver", label: "Vancouver, Canada" },
-    { value: "melbourne", label: "Melbourne, Australia" },
-    { value: "brisbane", label: "Brisbane, Australia" },
-    { value: "helsinki", label: "Helsinki, Finland" },
-    { value: "oslo", label: "Oslo, Norway" },
-    { value: "stockholm", label: "Stockholm, Sweden" },
-    { value: "copenhagen", label: "Copenhagen, Denmark" },
-    { value: "vienna", label: "Vienna, Austria" },
-    { value: "rome", label: "Rome, Italy" },
-    { value: "madrid", label: "Madrid, Spain" },
-    { value: "lisbon", label: "Lisbon, Portugal" },
-    { value: "athens", label: "Athens, Greece" },
-    { value: "manila", label: "Manila, Philippines" },
-    { value: "jakarta", label: "Jakarta, Indonesia" },
+    { value: "amsterdam,netherlands", label: "Amsterdam, Netherlands" },
+    { value: "zurich,switzerland", label: "Zurich, Switzerland" },
+    { value: "dublin,ireland", label: "Dublin, Ireland" },
+    { value: "barcelona,spain", label: "Barcelona, Spain" },
+    { value: "moscow,russia", label: "Moscow, Russia" },
+    { value: "mexico_city,mexico", label: "Mexico City, Mexico" },
+    { value: "buenos_aires,argentina", label: "Buenos Aires, Argentina" },
+    { value: "sao_paulo,brazil", label: "São Paulo, Brazil" },
+    { value: "cape_town,south_africa", label: "Cape Town, South Africa" },
+    { value: "cairo,egypt", label: "Cairo, Egypt" },
+    { value: "istanbul,turkey", label: "Istanbul, Turkey" },
+    { value: "kuala_lumpur,malaysia", label: "Kuala Lumpur, Malaysia" },
+    { value: "seoul,south_korea", label: "Seoul, South Korea" },
+    { value: "los_angeles,usa", label: "Los Angeles, USA" },
+    { value: "chicago,usa", label: "Chicago, USA" },
+    { value: "boston,usa", label: "Boston, USA" },
+    { value: "washington_dc,usa", label: "Washington DC, USA" },
+    { value: "atlanta,usa", label: "Atlanta, USA" },
+    { value: "vancouver,canada", label: "Vancouver, Canada" },
+    { value: "melbourne,australia", label: "Melbourne, Australia" },
+    { value: "brisbane,australia", label: "Brisbane, Australia" },
+    { value: "helsinki,finland", label: "Helsinki, Finland" },
+    { value: "oslo,norway", label: "Oslo, Norway" },
+    { value: "stockholm,sweden", label: "Stockholm, Sweden" },
+    { value: "copenhagen,denmark", label: "Copenhagen, Denmark" },
+    { value: "vienna,austria", label: "Vienna, Austria" },
+    { value: "rome,italy", label: "Rome, Italy" },
+    { value: "madrid,spain", label: "Madrid, Spain" },
+    { value: "lisbon,portugal", label: "Lisbon, Portugal" },
+    { value: "athens,greece", label: "Athens, Greece" },
+    { value: "manila,philippines", label: "Manila, Philippines" },
+    { value: "jakarta,indonesia", label: "Jakarta, Indonesia" }
   ];
+  
+  
 
   const companyNames = [
     { value: "google", label: "Google" },
@@ -147,8 +164,8 @@ const FindJob = ({setFilteredJobs}) => {
   ];  
   
   const jobTypes = [
-    { value: "full_time", label: "Full-time" },
-    { value: "part_time", label: "Part-time" },
+    { value: "full-time", label: "Full time" },
+    { value: "part-time", label: "Part time" },
     { value: "contract", label: "Contract" },
     { value: "temporary", label: "Temporary" },
     { value: "freelance", label: "Freelance" },
@@ -159,11 +176,10 @@ const FindJob = ({setFilteredJobs}) => {
     { value: "permanent", label: "Permanent" },
     { value: "remote", label: "Remote" },
     { value: "hybrid", label: "Hybrid" },
-    { value: "shift_based", label: "Shift-based" },
+    { value: "shift_based", label: "Shift based" },
     { value: "casual", label: "Casual" },
-    { value: "per_diem", label: "Per Diem" },
     { value: "gig", label: "Gig" },
-    { value: "commission_based", label: "Commission-based" },
+    { value: "commission_based", label: "Commission based" },
     { value: "consultant", label: "Consultant" },
     { value: "executive", label: "Executive" },
     { value: "entry_level", label: "Entry Level" }
@@ -171,6 +187,10 @@ const FindJob = ({setFilteredJobs}) => {
   
 
   const [salaryRange, setSalaryRange] = useState([20000, 70000]);
+
+  useEffect(()=>{
+    console.log(salaryRange)
+  }, [salaryRange])
 
   useEffect(() => {
     const rangeSliderElement = document.querySelector('#range-slider');
@@ -198,13 +218,13 @@ const FindJob = ({setFilteredJobs}) => {
     <>
       <nav className="flex h-24 items-center px-10 bg-zinc-800 text-zinc-300">
         <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-lg"></i>} filterType="jobRole" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
-        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-lg"></i>} filterType="Location" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
+        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-lg"></i>} filterType="location" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
         <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building"></i>} filterType="companyName" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
-        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-lg"></i>} filterType="jobTypes" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
+        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-lg"></i>} filterType="jobType" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
         <div className="w-full px-5 h-full">
           <div className="text-nowrap flex justify-between w-full mt-5 gap-x-8 items-center">
             <h1>Salary range</h1>

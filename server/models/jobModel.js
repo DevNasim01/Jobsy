@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const jobSchema = new mongoose.Schema({
   companyName: { type: String, required: true },
   jobRole: { type: String, required: true },
+  jobType: { type: String, required: true },
   location: { type: String, required: true },
   salary: { type: Number, required: true },
   tags: [String], // Tags can be an array of strings

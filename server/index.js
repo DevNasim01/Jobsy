@@ -75,37 +75,31 @@ const upload = multer({
 
 // Route to handle form submission
 app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
-  const { companyName, jobRole, location, salary, tags, formLink } = req.body;
+  const { companyName, jobRole, location, salary, tags, formLink, jobType } = req.body;
   const companyLogo = req.file;
 
-  // Helper function to process strings
-  const processString = (str) =>
-    encodeURIComponent(str.trim().toLowerCase().replace(/\s+/g, "_"));
-
-  // Check if the logo is uploaded successfully
-  if (companyLogo) {
-    console.log("Uploaded company logo:", companyLogo.filename);
-  }
-
-  // Basic validation for required fields
-  if (!companyName || !jobRole || !location || !salary || !formLink) {
+  if (!companyName || !jobRole || !location || !salary || !formLink || !jobType) {
     return res.status(400).json({ message: "Required fields missing" });
   }
 
   try {
-    const newJob = new Job({
-      companyName: processString(companyName),
-      jobRole: processString(jobRole),
-      location: processString(location),
-      salary: processString(salary),
-      tags: tags
-        ? tags.split(",").map((tag) => processString(tag)) // Process each tag
-        : [],
-      companyLogo: companyLogo ? companyLogo.filename : null, // Save the file name of the uploaded logo
-      formLink: encodeURIComponent(formLink.trim()), // URL-encode the form link
-    });
+    // Function to format form data
+    const formatFormData = (data) => {
+      return data.toLowerCase().replace(/\s+/g, '_');
+    };
 
-    // Save the new job to the database
+    const formattedData = {
+      companyName: formatFormData(companyName.trim()),
+      jobRole: formatFormData(jobRole.trim()),
+      jobType: formatFormData(jobType.trim()),
+      location: formatFormData(location.trim()),
+      salary: encodeURIComponent(salary.trim()),
+      tags: tags ? tags.split(',').map(tag => formatFormData(tag.trim())) : [],
+      companyLogo: companyLogo ? companyLogo.filename : null,
+      formLink: encodeURIComponent(formLink.trim()),
+    };
+
+    const newJob = new Job(formattedData);
     await newJob.save();
     res.status(200).json({ message: "Job submission successful" });
   } catch (error) {
@@ -113,6 +107,7 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
     res.status(500).json({ message: "Server error. Please try again later." });
   }
 });
+
 
 
 // Error handling middleware (optional for handling file type/size errors)
@@ -128,7 +123,42 @@ app.use((err, req, res, next) => {
 // Route to fetch all jobs
 app.get("/api/jobs", async (req, res) => {
   try {
-    const jobs = await Job.find(req.query); // Fetch all jobs from the database
+    // Prepare a query object
+    const query = {};
+
+    // Handle salary range
+    if (req.query.salary) {
+      const [minSalary, maxSalary] = req.query.salary.split("-").map(Number);
+      if (!isNaN(minSalary) && !isNaN(maxSalary)) {
+        query.salary = { $gte: minSalary, $lte: maxSalary }; // Filter jobs within the salary range
+      }
+    }
+
+    // Check if there are any tags in the query
+    if (req.query.tags) {
+      const tagsArray = req.query.tags.split(",").map((tag) => tag.trim());
+
+      // Match tags against companyName, jobRole, location, or tags field
+      query["$or"] = [
+        { tags: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against tags
+        { companyName: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against companyName
+        { jobRole: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against jobRole
+        { location: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against location
+      ];
+    } else {
+      // If no tags are provided, match other fields using regex (case-insensitive)
+      for (const key in req.query) {
+        if (key === "location") {
+          const locationsArray = req.query[key].split(",").map((loc) => loc.trim());
+          query[key] = { $in: locationsArray.map((loc) => new RegExp(loc, "i")) }; // Match any of the provided locations case-insensitively
+        } else if (key !== "salary") {
+          query[key] = { $regex: new RegExp(req.query[key], "i") }; // Case-insensitive regex for other fields
+        }
+      }
+    }
+
+    // Fetch jobs from the database
+    const jobs = await Job.find(query);
 
     // Helper function to format strings
     const formatString = (str) =>
@@ -137,18 +167,19 @@ app.get("/api/jobs", async (req, res) => {
         .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
 
     // Map the jobs to include the full URL for companyLogo and format fields
-    const updatedJobs = jobs.map(job => {
+    const updatedJobs = jobs.map((job) => {
       return {
         ...job._doc, // Include all job fields
         companyName: formatString(job.companyName),
         jobRole: formatString(job.jobRole),
+        jobType: formatString(job.jobType),
         location: formatString(job.location),
-        salary: decodeURIComponent(job.salary), // Decode the URL-encoded salary
-        tags: job.tags.map((tag) => formatString(tag)), // Format each tag
+        salary: decodeURIComponent(job.salary),
+        tags: job.tags.map((tag) => formatString(tag)),
         companyLogo: job.companyLogo
-          ? `${req.protocol}://${req.get('host')}/uploads/${job.companyLogo}`
+          ? `${req.protocol}://${req.get("host")}/uploads/${job.companyLogo}`
           : null,
-        formLink: decodeURIComponent(job.formLink) // Decode the URL-encoded form link
+        formLink: decodeURIComponent(job.formLink),
       };
     });
 
@@ -158,6 +189,10 @@ app.get("/api/jobs", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+
+
 
 
 

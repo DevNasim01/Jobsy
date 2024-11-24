@@ -13,18 +13,25 @@ import randomColor from "randomcolor";
 
 const JobArea = ({ filteredJobs = [] }) => {
   const [jobs, setJobs] = useState([]);
+  const [sortedJobs, setSortedJobs] = useState([]); // Store sorted jobs
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [sortOption, setSortOption] = useState("all"); // Track sorting option
 
   useEffect(() => {
     const fetchJobs = async () => {
       setError(false);
+      setLoading(true);
 
       try {
         let jobsData;
 
         // Use filteredJobs if provided
-        if (filteredJobs.length || filteredJobs === "not-found" || filteredJobs === "error") {
+        if (
+          filteredJobs.length ||
+          filteredJobs === "not-found" ||
+          filteredJobs === "error"
+        ) {
           if (filteredJobs === "error") {
             setError(true);
             setJobs([]);
@@ -55,8 +62,16 @@ const JobArea = ({ filteredJobs = [] }) => {
           }),
         }));
 
-        setJobs(jobsWithColor);
-        setLoading(false);
+        const timeOut = setTimeout(() => {
+          setJobs(jobsWithColor);
+          setSortedJobs(jobsWithColor); // Initialize sortedJobs
+        }, 700);
+
+        const timeOut2 = setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timeOut, timeOut2);
       } catch (error) {
         setLoading(false);
         console.error("Error fetching jobs:", error);
@@ -66,6 +81,18 @@ const JobArea = ({ filteredJobs = [] }) => {
 
     fetchJobs();
   }, [filteredJobs]);
+
+  // Sort jobs when sortOption changes
+  useEffect(() => {
+    if (sortOption === "recent") {
+      const sorted = [...jobs].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt) // Sort by recent
+      );
+      setSortedJobs(sorted);
+    } else {
+      setSortedJobs(jobs); // Reset to original order
+    }
+  }, [sortOption, jobs]);
 
   return (
     <section className="h-[calc(100vh-11rem)] w-full flex flex-col gap-y-10 overflow-auto pb-10 relative">
@@ -78,7 +105,7 @@ const JobArea = ({ filteredJobs = [] }) => {
         </h1>
         <div className="flex items-center gap-2">
           <h1 className="text-sm">Sorted by:</h1>
-          <Select>
+          <Select onValueChange={(value) => setSortOption(value)}>
             <SelectTrigger className="w-[100px]">
               <SelectValue placeholder="Select" className="Montserrat" />
             </SelectTrigger>
@@ -106,13 +133,13 @@ const JobArea = ({ filteredJobs = [] }) => {
             <i className="fa-regular fa-face-sad-tear text-8xl my-3 text-red-600"></i>
             <p className="font-medium text-sm">Try refreshing the page.</p>
           </div>
-        ) : jobs.length === 0 ? (
+        ) : sortedJobs.length === 0 ? (
           <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
             <p className="text-gray-500 font-medium text-xl">No jobs found.</p>
             <p className="font-medium text-sm">Try adjusting your filters.</p>
           </div>
         ) : (
-          jobs.map((job) => <JobCard key={job._id} job={job} />)
+          sortedJobs.map((job) => <JobCard key={job._id} job={job} />)
         )}
       </section>
     </section>
