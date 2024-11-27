@@ -103,7 +103,7 @@ const Recrute = () => {
               <h1 className="text-sm font-light">Job submission failed</h1>
               <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
             </div>
-            <p className="text-xs font-light">{error.response.data.message}</p>
+            <p className="text-[0.9vw] font-light">{error.response.data.message}</p>
           </>
         ),
         variant: "destructive",
@@ -112,17 +112,17 @@ const Recrute = () => {
     }
   };
 
-  const labelClasses = "block text-sm font-medium leading-loose Poppins";
+  const labelClasses = "block text-[1vw] font-medium leading-loose Poppins";
   const inputClasses = "Montserrat";
 
   return (
-    <main className="w-full flex justify-center">
-      <ScrollArea className="h-[calc(100vh-5rem)] w-[70%] bg-white">
+    <main className="w-full flex justify-center overflow-hidden h-[calc(100vh-5.6vw)]">
+      <ScrollArea className="h-[calc(100vh-5.6vw)] w-[70%] bg-white">
         <form
-          className="px-24 w-full flex flex-col gap-y-3 py-8"
+          className="px-[6vw] w-full flex flex-col gap-y-[0.5vw] py-[1.2vw]"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <h1 className="text-2xl font-semibold mb-1">Job Recruitment Form</h1>
+          <h1 className="text-[1.8vw] font-semibold mb-1">Job Recruitment Form</h1>
 
           {/* Company Name */}
           <div>
@@ -137,7 +137,7 @@ const Recrute = () => {
               placeholder="Enter company name"
             />
             {errors.companyName && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.companyName.message}
               </p>
             )}
@@ -150,23 +150,23 @@ const Recrute = () => {
             </label>
             <Input
               id="companyLogo"
-              className={`${inputClasses} p-1`}
+              className={`${inputClasses} p-[0.2vw]`}
               type="file"
               accept="image/*"
               {...register("companyLogo")}
             />
             {errors.companyLogo && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.companyLogo.message}
               </p>
             )}
             {logoPreview && (
               <div className="mt-2">
-                <p className="text-xs mb-2">Logo Preview:</p>
+                <p className="text-[0.9vw] mb-[0.2vw]">Logo Preview:</p>
                 <img
                   src={logoPreview}
                   alt="Company Logo Preview"
-                  className="w-28 h-28 object-cover border rounded"
+                  className="w-[7.77vw] h-[7.77vw] object-cover border rounded"
                 />
               </div>
             )}
@@ -185,7 +185,7 @@ const Recrute = () => {
               placeholder="Enter job role"
             />
             {errors.jobRole && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.jobRole.message}
               </p>
             )}
@@ -204,7 +204,7 @@ const Recrute = () => {
               placeholder="e.g. Full-time, Part-time"
             />
             {errors.jobType && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.jobType.message}
               </p>
             )}
@@ -223,7 +223,7 @@ const Recrute = () => {
               placeholder="Enter location"
             />
             {errors.location && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.location.message}
               </p>
             )}
@@ -242,7 +242,7 @@ const Recrute = () => {
               placeholder="Enter salary"
             />
             {errors.salary && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.salary.message}
               </p>
             )}
@@ -274,7 +274,7 @@ const Recrute = () => {
               placeholder="e.g. Google form link"
             />
             {errors.formLink && (
-              <p className="text-red-500 text-xs mt-1">
+              <p className="text-red-500 text-[0.9vw] mt-1">
                 {errors.formLink.message}
               </p>
             )}
@@ -291,13 +291,13 @@ const Recrute = () => {
         </form>
       </ScrollArea>
 
-      <div className="w-full flex items-center h-[calc(100vh-5rem)] justify-end pr-10 relative">
+      <div className="w-full flex items-center h-full justify-end pr-[5vw] relative">
         <img src="/form.svg" alt="" className="w-[60%]" />
-        <div className="absolute left-0 top-0 h-full w-full flex flex-col justify-center">
+        <div className="absolute left-0 top-0 h-full w-full flex flex-col justify-center text-[1.2vw]">
           <h1>Be sure to fill it up correctly</h1>
-          <p className="text-sm opacity-80">
+          <p className="text-[1vw] opacity-80">
             Thanks, happy recruit{" "}
-            <span className="ml-1">
+            <span className="ml-[0.2vw]">
               <i className="fa-regular fa-face-smile"></i>
             </span>
           </p>

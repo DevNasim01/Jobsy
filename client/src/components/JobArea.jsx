@@ -119,7 +119,7 @@ const JobArea = ({ filteredJobs = [] }) => {
         </div>
       </header>
 
-      <section className="px-[5.56vw] flex gap-[1.7vw] flex-wrap justify-center">
+      <section className="px-[2vw] flex gap-[1.5vw] flex-wrap justify-center">
         {loading ? (
           <div className="h-full absolute w-full top-0 flex justify-center items-center flex-col z-10 gap-[2.22vw]">
             <p className="text-[1.25vw] font-light">Please wait...</p>
