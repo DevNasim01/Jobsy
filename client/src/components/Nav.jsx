@@ -23,7 +23,7 @@ function Navbar({ setFilteredJobs }) {
   }, [location, navItems]); // Re-run the effect when the location changes
 
   return (
-    <nav className="flex h-20 w-full justify-around items-center bg-zinc-950 text-zinc-300 drop-shadow-md z-50">
+    <nav className="flex h-[5.6vw] w-full justify-around items-center bg-zinc-950 text-zinc-300 drop-shadow-md z-50 overflow-hidden">
       <Link
         to="/"
         className="cursor-pointer"
@@ -35,12 +35,12 @@ function Navbar({ setFilteredJobs }) {
         Logo
       </Link>
 
-      <div className="flex space-x-8 justify-center text-sm h-full items-end">
+      <div className="flex space-x-[2.5vw] justify-center text-[1vw] h-full items-end">
         {navItems.map((item, index) => (
           <Link
             key={index}
             to={item.path}
-            className={`py-4 border-b-2 px-2 transition-colors duration-300 Poppins ${
+            className={`py-[1vw] border-b-2 px-[0.5vw] transition-colors duration-300 Poppins ${
               activeItem === index ? "border-zinc-300" : "border-transparent"
             } hover:border-zinc-500`}
             onClick={() => setActiveItem(index)} // Set active item
@@ -54,7 +54,7 @@ function Navbar({ setFilteredJobs }) {
         <i className="fa-solid fa-user text-2xl"></i>
       </SignedOut>
       <SignedIn>
-        <div className="p-2 border grid place-items-center rounded-full">
+        <div className="p-[0.6vw] border grid place-items-center rounded-full">
           <UserButton />
         </div>
       </SignedIn>

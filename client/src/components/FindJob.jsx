@@ -216,21 +216,21 @@ const FindJob = ({setFilteredJobs}) => {
 
   return (
     <>
-      <nav className="flex h-24 items-center px-10 bg-zinc-800 text-zinc-300">
-        <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-lg"></i>} filterType="jobRole" filters={filters}
+      <nav className="flex h-[6.62vw] items-center px-[2vw] bg-zinc-800 text-zinc-300 overflow-hidden">
+        <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-[1.5vw]"></i>} filterType="jobRole" filters={filters}
       setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-lg"></i>} filterType="location" filters={filters}
+        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>} filterType="location" filters={filters}
       setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building"></i>} filterType="companyName" filters={filters}
+        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building text-[1.5vw]"></i>} filterType="companyName" filters={filters}
       setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-lg"></i>} filterType="jobType" filters={filters}
+        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>} filterType="jobType" filters={filters}
       setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <div className="w-full px-5 h-full">
-          <div className="text-nowrap flex justify-between w-full mt-5 gap-x-8 items-center">
+        <div className="w-full px-[1vw] h-full flex flex-col justify-center">
+          <div className="text-nowrap flex justify-between w-full gap-x-[1vw] text-[1.1vw] items-center h-fit">
             <h1>Salary range</h1>
-            <p className="w-36 text-right font-light text-sm">₹{salaryRange[0]} - ₹{salaryRange[1]}</p> 
+            <p className="w-[10vw] text-right font-light text-[1vw]">₹{salaryRange[0]} - ₹{salaryRange[1]}</p> 
           </div>
-          <div id="range-slider" className='mt-4' />
+          <div id="range-slider" className='mt-[1.2vw] h-fit' />
         </div>
       </nav>
     </>

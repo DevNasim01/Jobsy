@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
-const JobCard = ({ job, border }) => {
+const JobCard = ({ job, border, fetchSavedJobs }) => {
   const formattedDate = new Date(job.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -29,41 +29,45 @@ const JobCard = ({ job, border }) => {
       const newJob = { id: job._id, date: clickedDate };
       localStorage.setItem("savedJobs", JSON.stringify([...savedJobs, newJob]));
     }
+    if(isBookmarked && fetchSavedJobs) {
+      fetchSavedJobs();
+    }
 
     // Toggle the bookmarked state
     setIsBookmarked(!isBookmarked);
+
   };
 
   return (
-    <div className={`min-h-64 w-[30%] border ${border && 'border-black'} rounded-2xl p-3 flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500`}>
+    <div className={`min-h-[17.78vw] w-[30%] border ${border && 'border-black'} rounded-2xl p-[0.8vw] flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500`}>
       <div
         style={{ backgroundColor: job.color }}
-        className="w-full rounded-2xl py-4 h-full"
+        className="w-full rounded-2xl py-[1vw] h-full"
       >
-        <header className="px-3 flex items-center justify-between">
-          <h1 className={`text-xs bg-white border rounded-xl w-fit px-2 py-1`}>
+        <header className="px-[0.9vw] flex items-center justify-between">
+          <h1 className={`text-[0.8vw] bg-white border rounded-xl w-fit px-[0.5vw] py-[0.3vw]`}>
             {formattedDate}
           </h1>
           <i
             className={`${
               isBookmarked ? "fa-solid" : "fa-regular"
-            } fa-bookmark bg-white rounded-full h-10 w-10 grid place-items-center text-xl cursor-pointer`}
+            } fa-bookmark bg-white rounded-full h-[2.8vw] w-[2.8vw] grid place-items-center text-[1.4vw] cursor-pointer`}
             onClick={handleBookmark}
           ></i>
         </header>
 
-        <div className="px-5 flex items-end mt-3 justify-between">
-          <header className="flex flex-col gap-2 w-[65%]">
-            <p className="text-sm">{job.companyName}</p>
-            <h1 className="text-2xl font-semibold leading-none">
+        <div className="px-[1.2vw] flex items-end mt-[0.6vw] justify-between">
+          <header className="flex flex-col gap-[0.4vw] w-[65%]">
+            <p className="text-[1vw]">{job.companyName}</p>
+            <h1 className="text-[1.65vw] font-semibold leading-none text-wrap">
               {job.jobRole}
             </h1>
-            <p className="text-xs font-semibold bg-white w-fit px-1.5 border rounded">
+            <p className="text-[0.8vw] font-semibold bg-white w-fit px-[0.2vw] border rounded">
               {job.jobType}
             </p>
           </header>
 
-          <div className="h-12 w-12 rounded-full bg-white">
+          <div className="h-[3.33vw] w-[3.33vw] rounded-full bg-white">
             {job.companyLogo && (
               <img
                 src={job.companyLogo}
@@ -74,35 +78,35 @@ const JobCard = ({ job, border }) => {
           </div>
         </div>
 
-        <div className="flex px-5 mt-7 gap-2 text-xs flex-wrap min-h-5">
+        <div className="flex px-[1.2vw] mt-[1.2vw] gap-[0.4vw] text-[0.8vw] flex-wrap">
           {job.tags.map((tag, index) => (
-            <p key={index} className="border rounded-xl px-2 py-1 border-black">
+            <p key={index} className="border rounded-xl px-[0.5vw] py-[0.25vw] h-fit border-black">
               #{tag}
             </p>
           ))}
         </div>
       </div>
 
-      <div className="px-2 py-4 flex items-center justify-between">
+      <div className="px-[0.5vw] py-[0.9vw] flex items-center justify-between text-[1.15vw]">
         <header>
           <h1>
             <span className="font-serif">₹</span>
             {job.salary >= 100000 ? (
               <>
-                {(job.salary / 100).toFixed(2)} <span className="text-sm">LPA</span>
+                {(job.salary / 100).toFixed(2)} <span className="text-[1vw]">LPA</span>
               </>
             ) : (
               <>
-                {job.salary} <span className="text-sm">K/month</span>
+                {job.salary} <span className="text-[1vw]">K/month</span>
               </>
             )}
           </h1>
 
-          <p className="text-xs font-light">{job.location}</p>
+          <p className="text-[0.9vw] font-light">{job.location}</p>
         </header>
 
         <Link target="_blank" to={job.formLink}>
-          <Button className="rounded-xl Poppins text-sm">Apply</Button>
+          <Button className="rounded-xl Poppins text-[1vw]">Apply</Button>
         </Link>
       </div>
     </div>

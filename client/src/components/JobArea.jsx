@@ -95,18 +95,18 @@ const JobArea = ({ filteredJobs = [] }) => {
   }, [sortOption, jobs]);
 
   return (
-    <section className="h-[calc(100vh-11rem)] w-full flex flex-col gap-y-10 overflow-auto pb-10 relative">
-      <header className="flex items-center justify-between mx-10 mt-8">
-        <h1 className="text-2xl font-medium">
+    <section className="h-[calc(100vh-12.22vw)] w-full flex flex-col gap-y-[2.78vw] overflow-auto pb-[2.78vw] relative">
+      <header className="flex items-center justify-between mx-[2.78vw] mt-[2.5vw]">
+        <h1 className="text-[1.8vw] font-medium">
           Recommended Job{" "}
-          <span className="text-lg border px-3 py-2 rounded-md">
+          <span className="text-[1.4vw] border px-[1vw] py-[0.5vw] rounded-md">
             {jobs.length}
           </span>
         </h1>
-        <div className="flex items-center gap-2">
-          <h1 className="text-sm">Sorted by:</h1>
+        <div className="flex items-center gap-[0.5vw]">
+          <h1 className="text-[1vw]">Sorted by:</h1>
           <Select onValueChange={(value) => setSortOption(value)}>
-            <SelectTrigger className="w-[100px]">
+            <SelectTrigger className="w-[7vw]">
               <SelectValue placeholder="Select" className="Montserrat" />
             </SelectTrigger>
             <SelectContent align="center">
@@ -119,24 +119,30 @@ const JobArea = ({ filteredJobs = [] }) => {
         </div>
       </header>
 
-      <section className="px-5 flex gap-8 flex-wrap justify-center">
+      <section className="px-[5.56vw] flex gap-[1.7vw] flex-wrap justify-center">
         {loading ? (
-          <div className="h-full absolute w-full top-0 flex justify-center items-center flex-col z-10 gap-2">
-            <p className="text-lg font-light">Please wait...</p>
+          <div className="h-full absolute w-full top-0 flex justify-center items-center flex-col z-10 gap-[2.22vw]">
+            <p className="text-[1.25vw] font-light">Please wait...</p>
             <Loader />
           </div>
         ) : error ? (
           <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
-            <p className="text-red-600 font-medium text-xl">
+            <p className="text-red-600 font-medium text-[1.39vw]">
               Something went wrong...
             </p>
-            <i className="fa-regular fa-face-sad-tear text-8xl my-3 text-red-600"></i>
-            <p className="font-medium text-sm">Try refreshing the page.</p>
+            <i className="fa-regular fa-face-sad-tear text-[6.67vw] my-[2.22vw] text-red-600"></i>
+            <p className="font-medium text-[0.97vw]">
+              Try refreshing the page.
+            </p>
           </div>
         ) : sortedJobs.length === 0 ? (
           <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
-            <p className="text-gray-500 font-medium text-xl">No jobs found.</p>
-            <p className="font-medium text-sm">Try adjusting your filters.</p>
+            <p className="text-gray-500 font-medium text-[1.39vw]">
+              No jobs found.
+            </p>
+            <p className="font-medium text-[0.97vw]">
+              Try adjusting your filters.
+            </p>
           </div>
         ) : (
           sortedJobs.map((job) => <JobCard key={job._id} job={job} />)

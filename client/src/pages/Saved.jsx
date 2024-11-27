@@ -110,7 +110,7 @@ const Saved = () => {
                 <h1 className="font-normal mb-5 text-xl flex items-center gap-2"><i class="fa-solid fa-bookmark text-2xl"></i> <span className="underline">Created at:</span> {date}</h1> 
                 <div className="flex flex-wrap gap-4 w-full justify-center">
                   {groupedJobs[date].map((job) => (
-                    <JobCard key={job._id} job={job} border={true} />
+                    <JobCard key={job._id} job={job} border={true} fetchSavedJobs={fetchSavedJobs} />
                   ))}
                 </div>
               </div>

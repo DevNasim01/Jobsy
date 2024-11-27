@@ -8,11 +8,11 @@ import { ScrollArea } from "./ui/scroll-area";
 
 const CheckItem = ({ id, label, checked, onChange }) => {
   return (
-    <span className="flex items-center gap-x-2 w-fit Montserrat">
+    <span className="flex items-center gap-x-[0.5vw] w-fit Montserrat">
       <Checkbox id={id} checked={checked} onCheckedChange={onChange} className="cursor-pointer" />
       <label
         htmlFor={id}
-        className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-[0.85vw] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         {label}
       </label>
@@ -108,49 +108,49 @@ const SideBar = ({ setFilteredJobs }) => {
   ];
 
   return (
-    <section className="h-[calc(100vh-11rem)] w-[28vw]">
+    <section className="h-[calc(100vh-12.22vw)] w-[28vw]">
       <ScrollArea className="h-full relative">
         <div className="absolute h-[85%] border-r-2 bottom-0 right-0" />
-        <div className="flex items-center gap-2 px-5 pt-5 pb-2">
-          <i className="fa-solid fa-filter text-2xl"></i>
-          <h1 className="text-xl font-semibold opacity-85">Filter:</h1>
+        <div className="flex items-center gap-[0.5vw] pl-[1.2vw] pt-[1.2vw] pb-[0.5vw]">
+          <i className="fa-solid fa-filter text-[2vw]"></i>
+          <h1 className="text-[1.5vw] font-semibold opacity-85">Filter:</h1>
         </div>
-        <div className="px-7">
+        <div className="px-[1.8vw]">
           <h1 className="text-[1.4vw] font-semibold tracking-tight">Search Keywords</h1>
-          <p className="text-[0.9vw] font-medium py-1 tracking-tight leading-tight opacity-75">
+          <p className="text-[0.9vw] font-medium py-[0.5vw] tracking-tight leading-tight opacity-75">
             Select relevant keywords such as company names, locations, and job roles.
             <br />
-            <span className="opacity-80 font-normal text-xs">(at most 5)</span>
+            <span className="opacity-80 font-normal text-[0.8vw]">(at most 5)</span>
           </p>
 
-          <div className="flex w-full max-w-sm items-center space-x-2 py-2">
+          <div className="flex w-full max-w-[26.67vw] items-center space-x-[0.5vw] py-[0.8vw]">
             <Input
               type="text"
               placeholder="Keywords"
-              className="Poppins text-xs"
+              className="Poppins text-[0.9vw]"
               value={inputValue}
               onChange={handleChange}
               disabled={keywords.length >= 5}
             />
             <Button
               type="button"
-              className="Poppins text-lg"
+              className="Poppins text-[1.2vw]"
               onClick={handleAddKeyword}
               disabled={keywords.length >= 5}
             >
               +
             </Button>
           </div>
-          <p className="text-[0.8vw] leading-tight font-light tracking-tight py-2">
+          <p className="text-[0.8vw] leading-tight font-light tracking-tight py-[0.5vw]">
             This will help us find the most suitable job opportunities for you with greater accuracy.
           </p>
 
           {/* Display added keywords */}
-          <div className="mt-2 flex gap-3 flex-wrap justify-center">
+          <div className="mt-[0.5vw] flex gap-[0.8vw] flex-wrap justify-center">
             {keywords.map((keyword, index) => (
               <span
                 key={index}
-                className="bg-zinc-300 p-2 rounded-md w-fit flex items-center gap-x-2 text-xs font-medium opacity-90"
+                className="bg-zinc-300 p-[0.5vw] rounded-md w-fit flex items-center gap-x-[0.5vw] text-[0.9vw] font-medium opacity-90"
               >
                 <p>{keyword}</p>
                 <button onClick={() => handleRemoveKeyword(index)}>
@@ -160,8 +160,8 @@ const SideBar = ({ setFilteredJobs }) => {
             ))}
           </div>
 
-          <div className="border-t mt-5 p-2 flex flex-col gap-y-2">
-            <h1 className="text-base pb-2 font-medium">Employment types:</h1>
+          <div className="border-t mt-[1.2vw] p-[0.5vw] flex flex-col gap-y-[0.5vw]">
+            <h1 className="text-[1.2vw] pb-[0.5vw] font-medium">Employment types:</h1>
             {items.map((item) => (
               <CheckItem
                 key={item.id}
@@ -173,8 +173,8 @@ const SideBar = ({ setFilteredJobs }) => {
             ))}
           </div>
 
-          <div className="border-t mt-5 py-2">
-            <h1 className="px-2 flex gap-2 items-center justify-center text-sm">
+          <div className="border-t mt-[1.2vw] py-[0.5vw]">
+            <h1 className="px-[0.5vw] flex gap-[0.4vw] items-center justify-center text-[0.9vw]">
               2024 <br />
               <i className="fa-regular fa-copyright"></i>All rights reserved.
             </h1>

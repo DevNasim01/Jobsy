@@ -110,20 +110,20 @@ export function DropDown({
           variant="Ghost"
           role="combobox"
           aria-expanded={open}
-          className="justify-between w-full Poppins font-light text-zinc-300 rounded-none border-r py-7 my-5 px-8 text-sm"
+          className="justify-between w-full Poppins font-light text-zinc-300 rounded-none border-r py-[2vw] px-[2.22vw] text-[1vw]"
         >
-          <div className="flex items-center gap-x-3">
+          <div className="flex items-center gap-x-[1vw]">
             {icone}
-            <div className="w-32 truncate text-left">
+            <div className="w-[8.89vw] truncate text-left">
               {value
                 ? job.find((ele) => ele.value === value)?.label
                 : `Select ${title}`}
             </div>
           </div>
-          <CaretSortIcon className="ml-2 h-5 w-5 shrink-0 opacity-50" />
+          <CaretSortIcon className=" h-[1.5vw] w-[1.5vw] shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 Montserrat">
+      <PopoverContent className="w-[15vw] p-0 Montserrat">
         <Command>
           <CommandInput placeholder={`Search ${title}`} className="h-9" />
           <CommandList>
@@ -139,7 +139,7 @@ export function DropDown({
                   {ele.label}
                   <CheckIcon
                     className={cn(
-                      "ml-auto h-4 w-4",
+                      "ml-auto h-[1.5vw] w-[1.5vw]",
                       value === ele.value ? "opacity-100" : "opacity-0"
                     )}
                   />
