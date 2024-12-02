@@ -91,15 +91,7 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
         <header>
           <h1>
             <span className="font-serif">₹</span>
-            {job.salary >= 100000 ? (
-              <>
-                {(job.salary / 100).toFixed(2)} <span className="text-[1vw]">LPA</span>
-              </>
-            ) : (
-              <>
-                {job.salary} <span className="text-[1vw]">K/month</span>
-              </>
-            )}
+            {job.salary} <span className="text-[1vw]">K/month</span>
           </h1>
 
           <p className="text-[0.9vw] font-light">{job.location}</p>

@@ -7,9 +7,9 @@ import { AuthDialog } from "./components/AuthDialog";
 import { Route, Routes } from "react-router-dom";
 import About from "./pages/About";
 import Saved from "./pages/Saved";
-import { Contact } from "lucide-react";
 import Recrute from "./pages/Recrute";
 import { useState } from "react";
+import Contact from "./pages/Contact";
 function App() {
   const [filteredJobs, setFilteredJobs] = useState([]);
   return (

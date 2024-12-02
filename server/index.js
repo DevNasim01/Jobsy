@@ -6,6 +6,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const fs = require('fs');
 const Job = require("./models/jobModel");
+const SupportMessage = require("./models/supportMessageModel")
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
@@ -191,7 +192,30 @@ app.get("/api/jobs", async (req, res) => {
 });
 
 
+// Route to handle contact form submissions
+app.post("/api/contact", async (req, res) => {
+  const { email, subject, message, username } = req.body;
 
+  if (!email || !subject || !message || !username) {
+    return res.status(400).json({ message: "Required fields are missing." });
+  }
+
+  try {
+    // Create a new support message entry
+    const newMessage = new SupportMessage({
+      email,
+      subject,
+      message,
+      username,
+    });
+
+    await newMessage.save(); // Save the message to the database
+    res.status(200).json({ message: "Message received successfully!" });
+  } catch (error) {
+    console.error("Error handling contact form submission:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+});
 
 
 

@@ -67,14 +67,14 @@
   }
 }
 
-h1, .Poppins{
+h1, .Poppins, label, button{
   font-family: "Poppins", sans-serif;
 }
 .cl-internal-1j7ahlv{
   height: 2rem;
   width: 2rem;
 }
-p, .Montserrat{
+p, .Montserrat, input{
   font-family: "Montserrat", sans-serif;
 }
 
