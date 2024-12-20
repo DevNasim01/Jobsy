@@ -8,10 +8,10 @@ const teamMembers = [
     phone: '9883796128',
     email: 'sknasimpc@gmail.com',
     socialLinks: {
-      github: 'https://github.com/sknasimali',
-      facebook: 'https://facebook.com/sknasimali',
-      linkedin: 'https://linkedin.com/in/sknasimali',
-      instagram: 'https://instagram.com/sknasimali',
+      github: 'https://github.com/DevNasim01',
+      facebook: 'https://www.facebook.com/profile.php?id=100044666708600',
+      linkedin: 'https://www.linkedin.com/in/sk-nasim-ali/',
+      instagram: 'https://www.instagram.com/sk.nasim__/',
     },
   },
   {
