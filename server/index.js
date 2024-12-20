@@ -52,7 +52,8 @@ if (!fs.existsSync(uploadsDir)) {
 // Set up Multer storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Files will be saved in 'uploads' folder
+    const uploadPath = path.join(__dirname, "uploads");
+    cb(null, uploadPath);// Files will be saved in 'uploads' folder
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid duplicate names

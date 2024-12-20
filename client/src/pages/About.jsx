@@ -15,14 +15,13 @@ const teamMembers = [
     },
   },
   {
-    name: 'Member 2',
-    phone: '1234567890',
-    email: 'member2@example.com',
+    name: 'Mou Mondal',
+    phone: '6297151360',
+    email: 'moumondal93509635@gmail.com',
     socialLinks: {
-      github: 'https://github.com/member2',
-      facebook: 'https://facebook.com/member2',
-      linkedin: 'https://linkedin.com/in/member2',
-      instagram: 'https://instagram.com/member2',
+      facebook: 'https://www.facebook.com/profile.php?id=100083163774337&mibextid=ZbWKwL',
+      linkedin: 'https://www.linkedin.com/in/mou-mondal-ba03522ba?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
+      instagram: 'https://www.instagram.com/mondal.mou6297/profilecard/?igsh=MjV6NGUwejR2bHhz',
     },
   },
   // Add more team members here
