@@ -187,10 +187,7 @@ const FindJob = ({setFilteredJobs}) => {
   
 
   const [salaryRange, setSalaryRange] = useState([20000, 70000]);
-
-  useEffect(()=>{
-    console.log(salaryRange)
-  }, [salaryRange])
+  const [sliderActive, setSliderActive] = useState(false);
 
   useEffect(() => {
     const rangeSliderElement = document.querySelector('#range-slider');
@@ -203,7 +200,8 @@ const FindJob = ({setFilteredJobs}) => {
         value: [20000, 70000], // Default range
         onInput: (value, userInteraction) => {
           if (userInteraction) {
-            setSalaryRange(value); // Update the salary range
+            setSalaryRange(value);
+            setSliderActive(true);  // Update the salary range
           }
         },
       };
@@ -219,13 +217,12 @@ const FindJob = ({setFilteredJobs}) => {
       <nav className="flex h-[6.62vw] items-center px-[2vw] bg-zinc-800 text-zinc-300 overflow-hidden">
         <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-[1.5vw]"></i>} filterType="jobRole" filters={filters}
       setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>} filterType="location" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building text-[1.5vw]"></i>} filterType="companyName" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>} filterType="jobType" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <div className="w-full px-[1vw] h-full flex flex-col justify-center">
+        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>} filterType="location" />
+        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building text-[1.5vw]"></i>} filterType="companyName" />
+        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>} filterType="jobType" />
+        <div className={`w-full transition-opacity duration-700 px-[1vw] h-full flex flex-col justify-center ${
+            sliderActive ? "" : "opacity-50"
+          }`}>
           <div className="text-nowrap flex justify-between w-full gap-x-[1vw] text-[1.1vw] items-center h-fit">
             <h1>Salary range</h1>
             <p className="w-[10vw] text-right font-light text-[1vw]">₹{salaryRange[0]} - ₹{salaryRange[1]}</p> 

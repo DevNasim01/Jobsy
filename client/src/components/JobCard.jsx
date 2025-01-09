@@ -67,14 +67,14 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
             </p>
           </header>
 
-          <div className="h-[3.33vw] w-[3.33vw] rounded-full bg-white">
-            {job.companyLogo && (
+          <div className="h-[3.33vw] w-[3.33vw] rounded-full">
+            {job.companyLogo ? (
               <img
                 src={job.companyLogo}
                 alt="logo"
-                className="h-full w-full object-cover rounded-full"
+                className="h-full w-full rounded-full bg-white object-cover"
               />
-            )}
+            ) : <i className="fa-regular fa-building h-full w-full text-[2.8vw]"></i>}
           </div>
         </div>
 

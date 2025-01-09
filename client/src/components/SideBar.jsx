@@ -3,7 +3,6 @@ import axios from "axios";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
-import { ComboboxPopover } from "./Cheak";
 import { ScrollArea } from "./ui/scroll-area";
 
 const CheckItem = ({ id, label, checked, onChange }) => {

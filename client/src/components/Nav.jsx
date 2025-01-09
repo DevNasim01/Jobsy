@@ -26,13 +26,13 @@ function Navbar({ setFilteredJobs }) {
     <nav className="flex h-[5.6vw] w-full justify-around items-center bg-zinc-950 text-zinc-300 drop-shadow-md z-50 overflow-hidden">
       <Link
         to="/"
-        className="cursor-pointer"
+        className="cursor-pointer text-[1.4vw] opacity-100 leading-none"
         onClick={() => {
           setActiveItem(0);
           setFilteredJobs([]);
         }} // Set active item on logo click
       >
-        Logo
+        <span className="text-[2vw] font-bold leading-none text-red-400 font-mono">J</span>obsy
       </Link>
 
       <div className="flex space-x-[2.5vw] justify-center text-[1vw] h-full items-end">
