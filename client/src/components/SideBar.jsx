@@ -76,7 +76,6 @@ const SideBar = ({ setFilteredJobs }) => {
       // Combine both keywords from the input and checked items
       const tags = keywords.join(",");
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs?tags=${tags}`);
-      console.log(`${import.meta.env.VITE_API_URL}/api/jobs?tags=${tags}`);
       const data = response.data;
 
       if (data.length === 0) {

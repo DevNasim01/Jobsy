@@ -54,7 +54,6 @@ export function DropDown({
       );
 
       const data = response.data;
-      console.log(`${import.meta.env.VITE_API_URL}/api/jobs?${queryString}`);
 
       if (data.length === 0) {
         setFilteredJobs("not-found");

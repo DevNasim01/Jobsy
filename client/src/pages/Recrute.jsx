@@ -26,6 +26,7 @@ const formSchema = z.object({
 const Recrute = () => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [isHostedServer, setIsHostedServer] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -66,6 +67,7 @@ const Recrute = () => {
   }, []);
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     // Prepare form data for submission
     const formData = new FormData();
     formData.append("companyName", data.companyName);
@@ -78,8 +80,6 @@ const Recrute = () => {
       formData.append("tags", data.tags);
     }
     formData.append("formLink", data.formLink);
-
-    console.log(data);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/submit-job`, // Remove curly braces here
@@ -87,20 +87,21 @@ const Recrute = () => {
       );
 
       if (response.status === 200) {
-        toast({
-          title: <p className="text-xl font-semibold">Success</p>,
-          description: (
-            <div className="flex gap-x-2 items-center">
-              <h1 className="text-sm font-light">Job added</h1>
-              <i className="fa-solid fa-check text-green-800 text-xl"></i>
-            </div>
-          ),
-          variant: "success",
-          className: "bg-white border text-black max-w-sm",
-        });
-        reset(); // Reset the form here
-        setLogoPreview(null); // Clear the logo preview
-      }
+          toast({
+            title: <p className="text-xl font-semibold">Success</p>,
+            description: (
+              <div className="flex gap-x-2 items-center">
+                <h1 className="text-sm font-light">Job added</h1>
+                <i className="fa-solid fa-check text-green-800 text-xl"></i>
+              </div>
+            ),
+            variant: "success",
+            className: "bg-white border text-black max-w-sm",
+          });
+          reset(); // Reset the form here
+          setLogoPreview(null); // Clear the logo preview
+        }
+        
     } catch (error) {
       toast({
         title: <p className="text-xl font-semibold">Error</p>,
@@ -118,6 +119,8 @@ const Recrute = () => {
         variant: "destructive",
         className: "bg-white border text-black max-w-sm",
       });
+    } finally {
+      setIsSubmitting(false); // Reset submitting state after completion
     }
   };
 
@@ -311,9 +314,12 @@ const Recrute = () => {
             <Button
               variant="outline"
               type="submit"
-              className="w-full bg-zinc-800 text-white hover:bg-zinc-900 hover:text-white"
+              disabled={isSubmitting} // Disable button while submitting
+              className={`w-full bg-zinc-800 text-white hover:bg-zinc-900 hover:text-white ${
+                isSubmitting ? "cursor-not-allowed opacity-50" : ""
+              }`}
             >
-              Submit
+              {isSubmitting ? "Processing..." : "Submit"} {/* Dynamic label */}
             </Button>
           </form>
         </ScrollArea>
