@@ -5,7 +5,6 @@ import SideBar from "./components/SideBar";
 import JobArea from "./components/JobArea";
 import { AuthDialog } from "./components/AuthDialog";
 import { Route, Routes } from "react-router-dom";
-import About from "./pages/About";
 import Saved from "./pages/Saved";
 import Recrute from "./pages/Recrute";
 import { useState } from "react";
@@ -36,7 +35,6 @@ function App() {
             }
           />
           <Route path="/recrute" element={<Recrute />} />
-          <Route path="/about" element={<About />} />
           <Route path="/saved" element={<Saved />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>

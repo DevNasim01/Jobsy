@@ -11,14 +11,8 @@ const SupportMessage = require("./models/supportMessageModel")
 const app = express();
 const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
 
-// Middleware to handle CORS
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://jobsy-mauve.vercel.app/" // Add localhost for development
-];
-
 const corsConfig = {
-  origin: allowedOrigins,
+  origin: "*",
   methods: ["GET", "POST"],
   credentials: true,
 }

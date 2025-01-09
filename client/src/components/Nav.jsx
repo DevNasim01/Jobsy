@@ -11,7 +11,6 @@ function Navbar({ setFilteredJobs }) {
     { label: "Find Job", path: "/" },
     { label: "Recrute", path: "/recrute" },
     { label: "Saved", path: "/saved" },
-    { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
   ];
 
