@@ -217,9 +217,12 @@ const FindJob = ({setFilteredJobs}) => {
       <nav className="flex h-[6.62vw] items-center px-[2vw] bg-zinc-800 text-zinc-300 overflow-hidden">
         <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-[1.5vw]"></i>} filterType="jobRole" filters={filters}
       setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange}/>
-        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>} filterType="location" />
-        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building text-[1.5vw]"></i>} filterType="companyName" />
-        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>} filterType="jobType" />
+        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>} filterType="location" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building text-[1.5vw]"></i>} filterType="companyName" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
+        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>} filterType="jobType" filters={filters}
+      setFilters={setFilters} setFilteredJobs={setFilteredJobs}/>
         <div className={`w-full transition-opacity duration-700 px-[1vw] h-full flex flex-col justify-center ${
             sliderActive ? "" : "opacity-50"
           }`}>

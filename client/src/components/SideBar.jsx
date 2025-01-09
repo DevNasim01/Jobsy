@@ -171,11 +171,12 @@ const SideBar = ({ setFilteredJobs }) => {
             ))}
           </div>
 
-          <div className="border-t mt-[1.2vw] py-[0.5vw]">
+          <div className="border-t mt-[1.2vw] py-[0.5vw] text-center text-[1.2vw] font-mono">
             <h1 className="px-[0.5vw] flex gap-[0.4vw] items-center justify-center text-[0.9vw]">
               2024 <br />
               <i className="fa-regular fa-copyright"></i>All rights reserved.
             </h1>
+              <a href="https://devnasim.me" target="_blank">-- dev.nasim <i className="fa-solid fa-globe"></i></a>
             
           </div>
         </div>
