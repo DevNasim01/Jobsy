@@ -1,3 +1,4 @@
+import React from "react";
 import { ClerkLoaded, ClerkLoading, SignedOut } from "@clerk/clerk-react";
 import Nav from "./components/Nav";
 import FindJob from "./components/FindJob";
@@ -11,6 +12,8 @@ import { useState } from "react";
 import Contact from "./pages/Contact";
 function App() {
   const [filteredJobs, setFilteredJobs] = useState([]);
+  const [Tags, setTages] = useState([]);
+  const [loading, setLoading] = useState(true);
   return (
     <>
       <ClerkLoading>Loading...</ClerkLoading>
@@ -26,10 +29,10 @@ function App() {
             path="/"
             element={
               <div>
-                <FindJob setFilteredJobs={setFilteredJobs} />
+                <FindJob setFilteredJobs={setFilteredJobs} Tags={Tags} setLoading={setLoading} />
                 <div className="flex w-full">
-                  <SideBar setFilteredJobs={setFilteredJobs}/>
-                  <JobArea filteredJobs={filteredJobs} />
+                  <SideBar setTages={setTages} setLoading={setLoading}/>
+                  <JobArea filteredJobs={filteredJobs} loading={loading} setLoading={setLoading}/>
                 </div>
               </div>
             }

@@ -19,7 +19,7 @@ const CheckItem = ({ id, label, checked, onChange }) => {
   );
 };
 
-const SideBar = ({ setFilteredJobs }) => {
+const SideBar = ({ setTages, setLoading }) => {
   const [inputValue, setInputValue] = useState("");
   const [keywords, setKeywords] = useState([]); // State to hold the keywords
   const [checkedItems, setCheckedItems] = useState({}); // State to hold checkbox states
@@ -71,35 +71,19 @@ const SideBar = ({ setFilteredJobs }) => {
   };
 
 
-  const fetchJobs = async () => {
-    try {
-      // Combine both keywords from the input and checked items
-      const tags = keywords.join(",");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/jobs?tags=${tags}`);
-      const data = response.data;
-
-      if (data.length === 0) {
-        setFilteredJobs("not-found"); // Notify no matching jobs found
-      } else {
-        setFilteredJobs(data); // Update filtered jobs
-      }
-    } catch (error) {
-      setFilteredJobs("error");
-      console.error("Error fetching filtered jobs:", error);
-    }
-  };
-
   // Trigger GET request when `keywords` changes
   useEffect(() => {
+    setLoading(true);
     if (keywords.length > 0) {
-      fetchJobs();
+      const tags = keywords.join(",");
+      setTages(tags);
     } else {
-      setFilteredJobs([]); // Clear filtered jobs when no keywords
+      setTages([]); // Clear filtered jobs when no keywords
     }
   }, [keywords]);
 
   const items = [
-    { id: "Full_day", label: "Full day" },
+    { id: "Full_time", label: "Full time" },
     { id: "Flexible_schedule", label: "Flexible schedule" },
     { id: "Shift_work", label: "Shift work" },
     { id: "Distent_work", label: "Distent work" },

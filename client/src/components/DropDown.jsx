@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { set } from "react-hook-form";
 
 export function DropDown({
   job,
@@ -27,6 +28,8 @@ export function DropDown({
   setFilters,
   setFilteredJobs,
   salaryRange,
+  Tags,
+  setLoading,
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
@@ -43,28 +46,39 @@ export function DropDown({
   
 
   const fetchFilteredJobs = async (updatedFilters) => {
-    try {
-      const queryString = Object.entries(updatedFilters)
-        .filter(([_, val]) => val)
-        .map(([key, val]) => `${key}=${val}`)
-        .join("&");
+  try {
+    setFilteredJobs([]);
+    // Exclude empty or undefined filters, including empty tags
+    const queryString = Object.entries(updatedFilters)
+      .filter(([key, val]) => val && (key !== "tags" || val.length > 0))
+      .map(([key, val]) => {
+        if (key === "tags" && Array.isArray(val)) {
+          return `${key}=${val.join(",")}`;
+        }
+        return `${key}=${val}`;
+      })
+      .join("&");
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/jobs?${queryString}`
-      );
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/jobs?${queryString}`
+    );
 
-      const data = response.data;
+    const data = response.data;
 
-      if (data.length === 0) {
-        setFilteredJobs("not-found");
-      } else {
-        setFilteredJobs(data);
-      }
-    } catch (error) {
-      setFilteredJobs("error");
-      console.error("Error fetching filtered jobs:", error);
+    if (data.length === 0) {
+      setFilteredJobs("not-found");
+      setLoading(false);
+    } else {
+      setFilteredJobs(data);
+      setLoading(false);
     }
-  };
+  } catch (error) {
+    setFilteredJobs("error");
+    setLoading(false);
+    console.error("Error fetching filtered jobs:", error);
+  }
+};
+
 
   // Track salaryRange changes
   React.useEffect(() => {
@@ -89,6 +103,7 @@ export function DropDown({
 
   // Handle filter selection
   const handleSelect = (selectedValue) => {
+    setLoading(true);
     const updatedValue = selectedValue === value ? "" : selectedValue;
     setValue(updatedValue);
   
@@ -96,10 +111,21 @@ export function DropDown({
       ...filters,
       [filterType]: updatedValue,
     };
-  
     setFilters(updatedFilters);
     debouncedFetch(updatedFilters); // Use the debounced function here too
   };
+
+  React.useEffect(() => {
+    if (Tags && Tags.length >= 0) {
+      const updatedFilters = {
+        ...filters,
+        tags: Tags,
+      };
+      setFilters(updatedFilters);
+      debouncedFetch(updatedFilters);
+    }
+  }, [Tags]); // Dependency on Tags
+  
   
 
   return (

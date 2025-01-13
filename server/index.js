@@ -132,27 +132,31 @@ app.get("/api/jobs", async (req, res) => {
     }
 
     // Check if there are any tags in the query
-    if (req.query.tags) {
-      const tagsArray = req.query.tags.split(",").map((tag) => tag.trim());
+if (req.query.tags) {
+  const tagsArray = req.query.tags.split(",").map((tag) => tag.trim());
 
-      // Match tags against companyName, jobRole, location, or tags field
-      query["$or"] = [
-        { tags: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against tags
-        { companyName: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against companyName
-        { jobRole: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against jobRole
-        { location: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against location
-      ];
-    } else {
-      // If no tags are provided, match other fields using regex (case-insensitive)
-      for (const key in req.query) {
-        if (key === "location") {
-          const locationsArray = req.query[key].split(",").map((loc) => loc.trim());
-          query[key] = { $in: locationsArray.map((loc) => new RegExp(loc, "i")) }; // Match any of the provided locations case-insensitively
-        } else if (key !== "salary") {
-          query[key] = { $regex: new RegExp(req.query[key], "i") }; // Case-insensitive regex for other fields
-        }
-      }
+  // Match tags against companyName, jobRole, location, jobType, or tags field
+  query["$or"] = [
+    { tags: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against tags
+    { companyName: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against companyName
+    { jobRole: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against jobRole
+    { location: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against location
+    { jobType: { $in: tagsArray.map((tag) => new RegExp(tag, "i")) } }, // Match against jobType
+  ];
+} else {
+  // If no tags are provided, match other fields using regex (case-insensitive)
+  for (const key in req.query) {
+    if (key === "location") {
+      const locationsArray = req.query[key].split(",").map((loc) => loc.trim());
+      query[key] = { $in: locationsArray.map((loc) => new RegExp(loc, "i")) }; // Match any of the provided locations case-insensitively
+    } else if (key === "jobType") {
+      query[key] = { $regex: new RegExp(req.query[key], "i") }; // Match jobType if provided
+    } else if (key !== "salary") {
+      query[key] = { $regex: new RegExp(req.query[key], "i") }; // Case-insensitive regex for other fields
     }
+  }
+}
+
 
     // Fetch jobs from the database
     const jobs = await Job.find(query);

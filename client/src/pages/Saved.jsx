@@ -107,7 +107,7 @@ const Saved = () => {
           {Object.keys(groupedJobs).length ? (
             Object.keys(groupedJobs).map((date) => (
               <div key={date} className="w-full">
-                <h1 className="font-normal mb-5 text-[1.2vw] flex items-center gap-2"><i class="fa-solid fa-bookmark text-[1.8vw]"></i> <span className="underline">Created at:</span> {date}</h1> 
+                <h1 className="font-normal mb-5 text-[1.2vw] flex items-center gap-2"><i className="fa-solid fa-bookmark text-[1.8vw]"></i> <span className="underline">Created at:</span> {date}</h1> 
                 <div className="flex flex-wrap gap-4 w-full justify-center">
                   {groupedJobs[date].map((job) => (
                     <JobCard key={job._id} job={job} border={true} fetchSavedJobs={fetchSavedJobs} />
