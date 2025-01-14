@@ -15,9 +15,18 @@ function App() {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [Tags, setTages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
 
   const loadingBarRef = useRef(null);
   const location = useLocation();
+
+  useEffect(() => {
+    // Detect screen size and set state
+    const handleResize = () => setIsLargeScreen(window.innerWidth >= 1024);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Trigger the progress bar on route changes
   useEffect(() => {
@@ -49,7 +58,7 @@ function App() {
 
       <ClerkLoaded>
         <SignedOut>
-          <AuthDialog />
+        {isLargeScreen && <AuthDialog />}
         </SignedOut>
 
         {/* Navigation and Routes */}
