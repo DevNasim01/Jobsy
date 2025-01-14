@@ -67,16 +67,16 @@ export function DropDown({
 
     if (data.length === 0) {
       setFilteredJobs("not-found");
-      setLoading(false);
     } else {
       setFilteredJobs(data);
-      setLoading(false);
     }
-  } catch (error) {
+    } catch (error) {
     setFilteredJobs("error");
-    setLoading(false);
     console.error("Error fetching filtered jobs:", error);
-  }
+    } finally {
+    const timeoutId = setTimeout(() => setLoading(false), 500); // Simulate loading delay
+    return () => clearTimeout(timeoutId); // Clean up the timeout
+    }
 };
 
 

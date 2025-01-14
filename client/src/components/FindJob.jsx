@@ -164,7 +164,6 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
   ];  
   
   const jobTypes = [
-    { value: "full-time", label: "Full time" },
     { value: "part-time", label: "Part time" },
     { value: "contract", label: "Contract" },
     { value: "temporary", label: "Temporary" },
@@ -200,6 +199,7 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
         value: [20000, 70000], // Default range
         onInput: (value, userInteraction) => {
           if (userInteraction) {
+            setLoading(true); // Set loading state
             setSalaryRange(value);
             setSliderActive(true);  // Update the salary range
           }

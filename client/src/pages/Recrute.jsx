@@ -231,7 +231,7 @@ const Recrute = () => {
                 className={inputClasses}
                 type="text"
                 {...register("jobType")}
-                placeholder="e.g. Full-time, Part-time"
+                placeholder="e.g. Full time, Part time"
               />
               {errors.jobType && (
                 <p className="text-red-500 text-[0.9vw] mt-1">

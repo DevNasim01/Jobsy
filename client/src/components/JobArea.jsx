@@ -15,7 +15,6 @@ const JobArea = ({ filteredJobs = [], loading, setLoading }) => {
   const [sortedJobs, setSortedJobs] = useState([]);
   const [error, setError] = useState(false);
   const [sortOption, setSortOption] = useState("all");
-  const [initialLoading, setInitialLoading] = useState(true); // Manage initial loading
 
   // Timer to check for loading duration
   useEffect(() => {
@@ -30,55 +29,54 @@ const JobArea = ({ filteredJobs = [], loading, setLoading }) => {
   }, [loading, setLoading]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setInitialLoading(false);
-    }, 4000); // Simulate loading on first render
+    const processJobs = () => {
+      try {
+        setError(false);
 
-    return () => clearTimeout(timer); // Cleanup timeout
-  }, []);
-
-  useEffect(() => {
-    if (!initialLoading) {
-      const processJobs = () => {
-        try {
-          setError(false);
-
-          if (filteredJobs === "error") {
-            throw new Error("Filtered jobs error");
-          }
-
-          if (filteredJobs === "not-found" || !filteredJobs.length) {
-            setJobs([]);
-            setSortedJobs([]);
-          } else {
-            const jobsWithColor = filteredJobs.map((job) => ({
-              ...job,
-              color: randomColor({
-                luminosity: "light",
-                alpha: 0.02,
-              }),
-            }));
-            setJobs(jobsWithColor);
-            setSortedJobs(jobsWithColor);
-          }
-        } catch (error) {
-          console.error("Error processing jobs:", error);
-          setError(true);
+        if (filteredJobs === "error") {
+          throw new Error("Filtered jobs error");
         }
-      };
 
-      processJobs();
-    }
-  }, [filteredJobs, initialLoading]);
+        if (filteredJobs === "not-found" || !filteredJobs.length) {
+          setJobs([]);
+          setSortedJobs([]);
+        } else {
+          const jobsWithColor = filteredJobs.map((job) => ({
+            ...job,
+            color: randomColor({
+              luminosity: "light",
+              alpha: 0.02,
+            }),
+          }));
+          setJobs(jobsWithColor);
+          setSortedJobs(jobsWithColor);
+        }
+      } catch (error) {
+        console.error("Error processing jobs:", error);
+        setError(true);
+      }
+    };
+
+    processJobs();
+  }, [filteredJobs]);
 
   useEffect(() => {
-    if (sortOption === "recent") {
-      const sorted = [...jobs].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      setSortedJobs(sorted);
-    } else {
-      setSortedJobs(jobs);
+    try {
+      setLoading(true);
+      if (jobs.length > 0 && sortOption === "recent") {
+        const sorted = [...jobs].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setSortedJobs(sorted);
+      } else {
+        setSortedJobs(jobs);
+      }
+    } finally {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 1200); // 5 seconds timeout
+
+      return () => clearTimeout(timer);
     }
   }, [sortOption, jobs]);
 
@@ -108,21 +106,16 @@ const JobArea = ({ filteredJobs = [], loading, setLoading }) => {
       </header>
 
       <section className="px-[2vw] flex gap-[1.5vw] flex-wrap justify-center">
-        {initialLoading ? (
+        {loading ? (
           <div className="h-full absolute w-full top-0 flex justify-center items-center flex-col z-10 gap-[2.22vw]">
-            <p className="text-[1.25vw] font-medium">Initializing, please wait...</p>
-            {<JobCardSkeleton />}
-          </div>
-        ) : loading ? (
-          <div className="h-full absolute w-full top-0 flex justify-center items-center flex-col z-10 gap-[2.22vw]">
-            <p className="text-[1.25vw] font-medium">Loading jobs, please wait...</p>
-            
-              <div className="flex w-full justify-around">
+            <p className="text-[1.25vw] font-medium">
+              Loading jobs, please wait...
+            </p>
+
+            <div className="flex w-full justify-around">
               <JobCardSkeleton />
               <JobCardSkeleton />
-              </div>
-              
-            
+            </div>
           </div>
         ) : error ? (
           <div className="text-center absolute top-0 w-full h-full flex items-center flex-col justify-center">
@@ -184,6 +177,5 @@ const JobCardSkeleton = () => {
     </div>
   );
 };
-
 
 export default JobArea;
