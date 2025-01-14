@@ -32,8 +32,8 @@ function App() {
     <>
       {/* Progress bar for page transitions */}
       <LoadingBar
-        color="linear-gradient(to right, #F87171, #EF4444, #DC2626)"
-        height={3}
+        color="linear-gradient(to right, #8A2387, #E94057, #F27121)"
+        height={2}
         ref={loadingBarRef}
       />
 

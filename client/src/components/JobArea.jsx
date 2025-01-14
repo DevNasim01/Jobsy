@@ -72,13 +72,17 @@ const JobArea = ({ filteredJobs = [], loading, setLoading }) => {
         setSortedJobs(jobs);
       }
     } finally {
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 1200); // 5 seconds timeout
+      if(jobs && jobs.length > 0) {
+       const timmer = setTimeout(() => {
+          setLoading(false);
+        }, 1000);
 
-      return () => clearTimeout(timer);
+        return () => clearTimeout(timmer);
+      } else {
+        setLoading(true);
+      }
     }
-  }, [sortOption, jobs]);
+  }, [sortOption]);
 
   return (
     <section className="h-[calc(100vh-12.22vw)] w-full flex flex-col gap-y-[2.78vw] overflow-auto pb-[2.78vw] relative">
