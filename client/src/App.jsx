@@ -10,23 +10,15 @@ import Saved from "./pages/Saved";
 import Recrute from "./pages/Recrute";
 import Contact from "./pages/Contact";
 import LoadingBar from "react-top-loading-bar";
+import { Dialog } from "@radix-ui/react-dialog";
 
 function App() {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [Tags, setTages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
 
   const loadingBarRef = useRef(null);
   const location = useLocation();
-
-  useEffect(() => {
-    // Detect screen size and set state
-    const handleResize = () => setIsLargeScreen(window.innerWidth >= 1024);
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // Trigger the progress bar on route changes
   useEffect(() => {
@@ -57,8 +49,9 @@ function App() {
       </ClerkLoading>
 
       <ClerkLoaded>
-        <SignedOut>
-        {isLargeScreen && <AuthDialog />}
+      <Dialog>
+      <SignedOut>
+          <AuthDialog />
         </SignedOut>
 
         {/* Navigation and Routes */}
@@ -88,6 +81,8 @@ function App() {
           <Route path="/saved" element={<Saved />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
+      </Dialog>
+        
       </ClerkLoaded>
     </>
   );

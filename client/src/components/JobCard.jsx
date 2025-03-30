@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 
 const JobCard = ({ job, border, fetchSavedJobs }) => {
   const formattedDate = new Date(job.createdAt).toLocaleDateString("en-US", {
@@ -17,11 +19,15 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
 
   const handleBookmark = () => {
     const savedJobs = JSON.parse(localStorage.getItem("savedJobs")) || [];
-    const isAlreadySaved = savedJobs.some((savedJob) => savedJob.id === job._id);
+    const isAlreadySaved = savedJobs.some(
+      (savedJob) => savedJob.id === job._id
+    );
 
     if (isAlreadySaved) {
       // Remove the job if already saved
-      const updatedJobs = savedJobs.filter((savedJob) => savedJob.id !== job._id);
+      const updatedJobs = savedJobs.filter(
+        (savedJob) => savedJob.id !== job._id
+      );
       localStorage.setItem("savedJobs", JSON.stringify(updatedJobs));
     } else {
       // Add the job if not saved
@@ -29,23 +35,28 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
       const newJob = { id: job._id, date: clickedDate };
       localStorage.setItem("savedJobs", JSON.stringify([...savedJobs, newJob]));
     }
-    if(isBookmarked && fetchSavedJobs) {
+    if (isBookmarked && fetchSavedJobs) {
       fetchSavedJobs();
     }
 
     // Toggle the bookmarked state
     setIsBookmarked(!isBookmarked);
-
   };
 
   return (
-    <div className={`min-h-[17.78vw] w-[30%] border ${border && 'border-black'} rounded-2xl p-[0.8vw] flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500`}>
+    <div
+      className={`min-h-[17.78vw] w-[30%] border ${
+        border && "border-black"
+      } rounded-2xl p-[0.8vw] flex flex-col pb-0 transition-transform hover:cursor-pointer hover:-translate-y-2 duration-500`}
+    >
       <div
         style={{ backgroundColor: job.color }}
         className="w-full rounded-2xl py-[1vw] h-full"
       >
         <header className="px-[0.9vw] flex items-center justify-between">
-          <h1 className={`text-[0.8vw] bg-white border rounded-xl w-fit px-[0.5vw] py-[0.3vw]`}>
+          <h1
+            className={`text-[0.8vw] bg-white border rounded-xl w-fit px-[0.5vw] py-[0.3vw]`}
+          >
             {formattedDate}
           </h1>
           <i
@@ -74,13 +85,18 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
                 alt="logo"
                 className="h-full w-full rounded-full bg-white object-cover"
               />
-            ) : <i className="fa-regular fa-building h-full w-full text-[2.8vw]"></i>}
+            ) : (
+              <i className="fa-regular fa-building h-full w-full text-[2.8vw]"></i>
+            )}
           </div>
         </div>
 
         <div className="flex px-[1.2vw] mt-[1.2vw] gap-[0.4vw] text-[0.8vw] flex-wrap">
           {job.tags.map((tag, index) => (
-            <p key={index} className="border rounded-xl px-[0.5vw] py-[0.25vw] h-fit border-black">
+            <p
+              key={index}
+              className="border rounded-xl px-[0.5vw] py-[0.25vw] h-fit border-black"
+            >
               #{tag}
             </p>
           ))}
@@ -97,9 +113,17 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
           <p className="text-[0.9vw] font-light">{job.location}</p>
         </header>
 
-        <Link target="_blank" to={job.formLink}>
-          <Button className="rounded-xl Poppins text-[1vw]">Apply</Button>
-        </Link>
+        <SignedIn>
+          <Link target="_blank" to={job.formLink}>
+            <Button className="rounded-xl Poppins text-[1vw]">Apply</Button>
+          </Link>
+        </SignedIn>
+
+        <SignedOut>
+          <DialogTrigger>
+            <Button className="rounded-xl Poppins text-[1vw]">Apply</Button>
+          </DialogTrigger>
+        </SignedOut>
       </div>
     </div>
   );

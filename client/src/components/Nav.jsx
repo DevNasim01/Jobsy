@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom"; // Import useLocation to get the current path
+import { DialogTrigger } from "./ui/dialog";
 
 function Navbar({ setFilteredJobs }) {
   const [activeItem, setActiveItem] = useState(0); // Default to the first item (index 0)
@@ -50,7 +51,10 @@ function Navbar({ setFilteredJobs }) {
       </div>
 
       <SignedOut>
-        <i className="fa-solid fa-user text-2xl"></i>
+      <DialogTrigger>
+
+        <i className="fa-solid fa-user text-xl py-2 px-4 border rounded-full cursor-pointer"></i>
+      </DialogTrigger>
       </SignedOut>
       <SignedIn>
         <div className="p-[0.6vw] border grid place-items-center rounded-full">
