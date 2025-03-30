@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { DropDown } from './DropDown';
-import rangeSlider from 'range-slider-input';
-import 'range-slider-input/dist/style.css';
+import React, { useEffect, useState } from "react";
+import { DropDown } from "./DropDown";
+import rangeSlider from "range-slider-input";
+import "range-slider-input/dist/style.css";
 
-const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
+const FindJob = ({ setFilteredJobs, Tags, setLoading }) => {
   const [filters, setFilters] = useState({});
 
   const job = [
@@ -13,6 +13,15 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "product_manager", label: "Product Manager" },
     { value: "ux_ui_designer", label: "UX/UI Designer" },
     { value: "graphic_designer", label: "Graphic Designer" },
+    { value: "junior_developer", label: "Junior Developer" },
+    { value: "data_entry_operator", label: "Data Entry Operator" },
+    { value: "frontend_intern", label: "Frontend Intern" },
+    { value: "cloud_support_intern", label: "Cloud Support Intern" },
+    { value: "medical_transcriptionist", label: "Medical Transcriptionist" },
+    { value: "agricultural_analyst", label: "Agricultural Analyst" },
+    { value: "finance_intern", label: "Finance Intern" },
+    { value: "logistics_coordinator", label: "Logistics Coordinator" },
+
     { value: "web_developer", label: "Web Developer" },
     { value: "mobile_app_developer", label: "Mobile App Developer" },
     { value: "cloud_engineer", label: "Cloud Engineer" },
@@ -26,14 +35,20 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "it_support_specialist", label: "IT Support Specialist" },
     { value: "qa_engineer", label: "QA Engineer" },
     { value: "blockchain_developer", label: "Blockchain Developer" },
-    { value: "artificial_intelligence_engineer", label: "Artificial Intelligence Engineer" },
+    {
+      value: "artificial_intelligence_engineer",
+      label: "Artificial Intelligence Engineer",
+    },
     { value: "robotics_engineer", label: "Robotics Engineer" },
     { value: "game_developer", label: "Game Developer" },
     { value: "embedded_systems_engineer", label: "Embedded Systems Engineer" },
     { value: "frontend_developer", label: "Frontend Developer" },
     { value: "backend_developer", label: "Backend Developer" },
     { value: "full_stack_developer", label: "Full Stack Developer" },
-    { value: "digital_marketing_specialist", label: "Digital Marketing Specialist" },
+    {
+      value: "digital_marketing_specialist",
+      label: "Digital Marketing Specialist",
+    },
     { value: "seo_specialist", label: "SEO Specialist" },
     { value: "content_writer", label: "Content Writer" },
     { value: "copywriter", label: "Copywriter" },
@@ -46,7 +61,10 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "bi_developer", label: "BI Developer" },
     { value: "it_consultant", label: "IT Consultant" },
     { value: "technical_writer", label: "Technical Writer" },
-    { value: "information_security_analyst", label: "Information Security Analyst" },
+    {
+      value: "information_security_analyst",
+      label: "Information Security Analyst",
+    },
     { value: "network_engineer", label: "Network Engineer" },
     { value: "cloud_architect", label: "Cloud Architect" },
     { value: "site_reliability_engineer", label: "Site Reliability Engineer" },
@@ -58,7 +76,10 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "recruiter", label: "Recruiter" },
     { value: "customer_success_manager", label: "Customer Success Manager" },
     { value: "solutions_architect", label: "Solutions Architect" },
-    { value: "technical_support_engineer", label: "Technical Support Engineer" },
+    {
+      value: "technical_support_engineer",
+      label: "Technical Support Engineer",
+    },
     { value: "quality_assurance_tester", label: "Quality Assurance Tester" },
     { value: "security_engineer", label: "Security Engineer" },
     { value: "frontend_engineer", label: "Frontend Engineer" },
@@ -66,12 +87,19 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "full_stack_engineer", label: "Full Stack Engineer" },
     { value: "hardware_engineer", label: "Hardware Engineer" },
   ];
-  
+
   const workLocations = [
     // India Cities
     { value: "bangalore,india", label: "Bangalore, India" },
     { value: "delhi,india", label: "Delhi, India" },
     { value: "mumbai,india", label: "Mumbai, India" },
+    { value: "australia", label: "Australia" },
+    { value: "canada", label: "Canada" },
+    { value: "france", label: "France" },
+    { value: "germany", label: "Germany" },
+    { value: "netherlands", label: "Netherlands" },
+    { value: "sweden", label: "Sweden" },
+
     { value: "kolkata,india", label: "Kolkata, India" },
     { value: "chennai,india", label: "Chennai, India" },
     { value: "hyderabad,india", label: "Hyderabad, India" },
@@ -85,7 +113,7 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "bhopal,india", label: "Bhopal, India" },
     { value: "patna,india", label: "Patna, India" },
     { value: "kanpur,india", label: "Kanpur, India" },
-  
+
     // Outsider Cities
     { value: "new_york,usa", label: "New York, USA" },
     { value: "san_francisco,usa", label: "San Francisco, USA" },
@@ -130,10 +158,8 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "lisbon,portugal", label: "Lisbon, Portugal" },
     { value: "athens,greece", label: "Athens, Greece" },
     { value: "manila,philippines", label: "Manila, Philippines" },
-    { value: "jakarta,indonesia", label: "Jakarta, Indonesia" }
+    { value: "jakarta,indonesia", label: "Jakarta, Indonesia" },
   ];
-  
-  
 
   const companyNames = [
     { value: "google", label: "Google" },
@@ -156,13 +182,23 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "slack", label: "Slack" },
     { value: "airbnb", label: "Airbnb" },
     { value: "uber", label: "Uber" },
+    { value: "pixelforge", label: "PixelForge" },
+    { value: "codecrafters", label: "CodeCrafters" },
+    { value: "byteburst", label: "ByteBurst" },
+    { value: "cloudnova", label: "CloudNova" },
+    { value: "neuralsync", label: "NeuralSync" },
+    { value: "uxvision", label: "UXVision" },
+    { value: "cybershield", label: "CyberShield" },
+    { value: "quantumlogic", label: "QuantumLogic" },
+    { value: "greentech_innovations", label: "GreenTech Innovations" },
+    { value: "biogenix_labs", label: "BioGenix Labs" },
     { value: "lyft", label: "Lyft" },
     { value: "shopify", label: "Shopify" },
     { value: "stripe", label: "Stripe" },
     { value: "snapchat", label: "Snap Inc." },
     { value: "tiktok", label: "TikTok" },
-  ];  
-  
+  ];
+
   const jobTypes = [
     { value: "part-time", label: "Part time" },
     { value: "contract", label: "Contract" },
@@ -181,15 +217,14 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
     { value: "commission_based", label: "Commission based" },
     { value: "consultant", label: "Consultant" },
     { value: "executive", label: "Executive" },
-    { value: "entry_level", label: "Entry Level" }
+    { value: "entry_level", label: "Entry Level" },
   ];
-  
 
   const [salaryRange, setSalaryRange] = useState([20000, 70000]);
   const [sliderActive, setSliderActive] = useState(false);
 
   useEffect(() => {
-    const rangeSliderElement = document.querySelector('#range-slider');
+    const rangeSliderElement = document.querySelector("#range-slider");
 
     if (rangeSliderElement) {
       const options = {
@@ -201,11 +236,11 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
           if (userInteraction) {
             setLoading(true); // Set loading state
             setSalaryRange(value);
-            setSliderActive(true);  // Update the salary range
+            setSliderActive(true); // Update the salary range
           }
         },
       };
-      
+
       rangeSlider(rangeSliderElement, options);
     }
 
@@ -215,22 +250,60 @@ const FindJob = ({setFilteredJobs, Tags, setLoading}) => {
   return (
     <>
       <nav className="flex h-[6.62vw] items-center px-[2vw] bg-zinc-800 text-zinc-300 overflow-hidden">
-        <DropDown job={job} title="Job field" icone={<i className="fa-solid fa-magnifying-glass text-[1.5vw]"></i>} filterType="jobRole" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} salaryRange={salaryRange} Tags={Tags} setLoading={setLoading}/>
-        <DropDown job={workLocations} title="Work location" icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>} filterType="location" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} setLoading={setLoading}/>
-        <DropDown job={companyNames} title="Company Name" icone={<i className="fa-solid fa-building text-[1.5vw]"></i>} filterType="companyName" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} setLoading={setLoading}/>
-        <DropDown job={jobTypes} title="Job type" icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>} filterType="jobType" filters={filters}
-      setFilters={setFilters} setFilteredJobs={setFilteredJobs} setLoading={setLoading}/>
-        <div className={`w-full transition-opacity duration-700 px-[1vw] h-full flex flex-col justify-center ${
+        <DropDown
+          job={job}
+          title="Job field"
+          icone={<i className="fa-solid fa-magnifying-glass text-[1.5vw]"></i>}
+          filterType="jobRole"
+          filters={filters}
+          setFilters={setFilters}
+          setFilteredJobs={setFilteredJobs}
+          salaryRange={salaryRange}
+          Tags={Tags}
+          setLoading={setLoading}
+        />
+        <DropDown
+          job={workLocations}
+          title="Work location"
+          icone={<i className="fa-solid fa-location-dot text-[1.5vw]"></i>}
+          filterType="location"
+          filters={filters}
+          setFilters={setFilters}
+          setFilteredJobs={setFilteredJobs}
+          setLoading={setLoading}
+        />
+        <DropDown
+          job={companyNames}
+          title="Company Name"
+          icone={<i className="fa-solid fa-building text-[1.5vw]"></i>}
+          filterType="companyName"
+          filters={filters}
+          setFilters={setFilters}
+          setFilteredJobs={setFilteredJobs}
+          setLoading={setLoading}
+        />
+        <DropDown
+          job={jobTypes}
+          title="Job type"
+          icone={<i className="fa-brands fa-redhat text-[1.5vw]"></i>}
+          filterType="jobType"
+          filters={filters}
+          setFilters={setFilters}
+          setFilteredJobs={setFilteredJobs}
+          setLoading={setLoading}
+        />
+        <div
+          className={`w-full transition-opacity duration-700 px-[1vw] h-full flex flex-col justify-center ${
             sliderActive ? "" : "opacity-50"
-          }`}>
+          }`}
+        >
           <div className="text-nowrap flex justify-between w-full gap-x-[1vw] text-[1.1vw] items-center h-fit">
             <h1>Salary range</h1>
-            <p className="w-[10vw] text-right font-light text-[1vw]">₹{salaryRange[0]} - ₹{salaryRange[1]}</p> 
+            <p className="w-[10vw] text-right font-light text-[1vw]">
+              ₹{salaryRange[0]} - ₹{salaryRange[1]}
+            </p>
           </div>
-          <div id="range-slider" className='mt-[1.2vw] h-fit' />
+          <div id="range-slider" className="mt-[1.2vw] h-fit" />
         </div>
       </nav>
     </>
