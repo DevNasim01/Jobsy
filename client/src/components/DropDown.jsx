@@ -39,7 +39,7 @@ export function DropDown({
     () =>
       debounce((updatedFilters) => {
         fetchFilteredJobs(updatedFilters);
-      }, 1000),
+      }, 400),
     []
   );
   
