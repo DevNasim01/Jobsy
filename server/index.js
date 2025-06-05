@@ -7,9 +7,13 @@ const mongoose = require("mongoose");
 const fs = require('fs');
 const Job = require("./models/jobModel");
 const SupportMessage = require("./models/supportMessageModel")
+const compression = require("compression");
+
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
+
+app.use(compression());
 
 const corsConfig = {
   origin: "*",
@@ -28,8 +32,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
   })
   .then(() => {
     console.log("Connected to MongoDB");
