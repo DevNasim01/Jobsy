@@ -6,8 +6,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const Job = require("./models/jobModel");
 const SupportMessage = require("./models/supportMessageModel")
-const compression = require("compression"); 
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const compression = require("compression");
 const cloudinary = require("./helper/cloudinary");  
 
 
@@ -40,71 +39,64 @@ mongoose
   });
 
 
-// Cloudinary storage
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "jobsy_logos",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
-});
-
+// Multer memory storage
+const storage = multer.memoryStorage();
 // File filter + size like before
 const upload = multer({
   storage,
-  limits: { fileSize: 1024 * 1024 * 2 }, // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!allowedTypes.includes(file.mimetype)) {
-      const error = new Error("Incorrect file type. Only JPEG, PNG allowed.");
-      error.status = 400;
-      return cb(error, false);
+      return cb(new Error("Only JPEG, PNG, WEBP allowed"));
     }
     cb(null, true);
-  },
+  }
 });
 
 // Route to handle form submission
 app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
   try {
-  const { companyName, jobRole, location, salary, tags, formLink, jobType } = req.body;
-  
-  if (!companyName || !jobRole || !location || !salary || !formLink || !jobType) {
-    return res.status(400).json({ message: "Required fields missing" });
-  }
-  let companyLogoUrl = null;
-  
-  if (req.file) {
-      // Upload file to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "Images", // optional
-      });
-      companyLogoUrl = result.secure_url; // Full URL from Cloudinary
+    const { companyName, jobRole, jobType, location, salary, tags, formLink } = req.body;
+    if (!companyName || !jobRole || !jobType || !location || !salary || !formLink) {
+      return res.status(400).json({ message: "Required fields missing" });
     }
-  
 
-    // Function to format form data
-    const formatFormData = (data) => {
-      return data.toLowerCase().replace(/\s+/g, '_');
-    };
+    let companyLogoUrl = null;
 
-    const formattedData = {
-      companyName: formatFormData(companyName.trim()),
-      jobRole: formatFormData(jobRole.trim()),
-      jobType: formatFormData(jobType.trim()),
-      location: formatFormData(location.trim()),
-      salary: encodeURIComponent(salary.trim()),
-      tags: tags ? tags.split(',').map(tag => formatFormData(tag.trim())) : [],
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "jobsy_logos" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      companyLogoUrl = result.secure_url;
+    }
+
+    const formatData = (str) => str.toLowerCase().replace(/\s+/g, "_");
+
+    const newJob = new Job({
+      companyName: formatData(companyName),
+      jobRole: formatData(jobRole),
+      jobType: formatData(jobType),
+      location: formatData(location),
+      salary: encodeURIComponent(salary),
+      tags: tags ? tags.split(",").map(tag => formatData(tag)) : [],
       companyLogo: companyLogoUrl,
-      formLink: encodeURIComponent(formLink.trim()),
-    };
+      formLink: encodeURIComponent(formLink),
+    });
 
-    const newJob = new Job(formattedData);
     await newJob.save();
     res.status(200).json({ message: "Job submission successful" });
-  } catch (error) {
-    console.error("Error saving job:", error);
-    res.status(500).json({ message: "Server error. Please try again later." });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
