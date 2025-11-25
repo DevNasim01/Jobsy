@@ -4,10 +4,11 @@ const cors = require("cors");
 require('dotenv').config(); // Load environment variables from .env file
 const path = require("path");
 const mongoose = require("mongoose");
-const fs = require('fs');
 const Job = require("./models/jobModel");
 const SupportMessage = require("./models/supportMessageModel")
-const compression = require("compression");
+const compression = require("compression"); 
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("./helper/cloudinary");  
 
 
 const app = express();
@@ -25,8 +26,6 @@ app.use(express.json());
 app.use(cors(corsConfig));
 // Middleware to parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
-// Serve static files from the 'uploads' folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // MongoDB connection
@@ -40,31 +39,24 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
-// Ensure that the 'uploads' directory exists
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
 
-// Set up Multer storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "uploads");
-    cb(null, uploadPath);// Files will be saved in 'uploads' folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid duplicate names
+// Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "jobsy_logos",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
 
-// File size and type validation
+// File filter + size like before
 const upload = multer({
   storage,
-  limits: { fileSize: 1024 * 1024 * 2 }, // 2MB size limit
+  limits: { fileSize: 1024 * 1024 * 2 }, // 2MB
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!allowedTypes.includes(file.mimetype)) {
-      const error = new Error("Incorrect file type. Only JPEG, PNG, and GIF allowed.");
+      const error = new Error("Incorrect file type. Only JPEG, PNG allowed.");
       error.status = 400;
       return cb(error, false);
     }
@@ -74,14 +66,23 @@ const upload = multer({
 
 // Route to handle form submission
 app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
+  try {
   const { companyName, jobRole, location, salary, tags, formLink, jobType } = req.body;
-  const companyLogo = req.file;
-
+  
   if (!companyName || !jobRole || !location || !salary || !formLink || !jobType) {
     return res.status(400).json({ message: "Required fields missing" });
   }
+  let companyLogoUrl = null;
+  
+  if (req.file) {
+      // Upload file to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "Images", // optional
+      });
+      companyLogoUrl = result.secure_url; // Full URL from Cloudinary
+    }
+  
 
-  try {
     // Function to format form data
     const formatFormData = (data) => {
       return data.toLowerCase().replace(/\s+/g, '_');
@@ -94,7 +95,7 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
       location: formatFormData(location.trim()),
       salary: encodeURIComponent(salary.trim()),
       tags: tags ? tags.split(',').map(tag => formatFormData(tag.trim())) : [],
-      companyLogo: companyLogo ? companyLogo.filename : null,
+      companyLogo: companyLogoUrl,
       formLink: encodeURIComponent(formLink.trim()),
     };
 
@@ -179,9 +180,7 @@ if (req.query.tags) {
         location: formatString(job.location),
         salary: decodeURIComponent(job.salary),
         tags: job.tags.map((tag) => formatString(tag)),
-        companyLogo: job.companyLogo
-          ? `${req.protocol}://${req.get("host")}/uploads/${job.companyLogo}`
-          : null,
+        companyLogo: job.companyLogo,
         formLink: decodeURIComponent(job.formLink),
       };
     });

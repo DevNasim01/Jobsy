@@ -11,7 +11,25 @@ import axios from "axios";
 // Zod schema for form validation
 const formSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
-  companyLogo: z.any().optional(),
+  companyLogo: z
+    .any()
+    .optional()
+    .refine(
+      (files) => {
+        if (!files || files.length === 0) return true; // Optional field
+        const file = files[0];
+        return file.size <= 2 * 1024 * 1024; // 2MB limit
+      },
+      { message: "File size must be less than 2MB" }
+    )
+    .refine(
+      (files) => {
+        if (!files || files.length === 0) return true;
+        const file = files[0];
+        return file.type.startsWith("image/");
+      },
+      { message: "Only image files are allowed" }
+    ),
   jobRole: z.string().min(1, "Job role is required"),
   jobType: z.string().min(1, "Job type is required"),
   location: z.string().min(1, "Location is required"),
@@ -25,7 +43,6 @@ const formSchema = z.object({
 
 const Recrute = () => {
   const [logoPreview, setLogoPreview] = useState(null);
-  const [isHostedServer, setIsHostedServer] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -41,67 +58,100 @@ const Recrute = () => {
 
   const watchLogo = watch("companyLogo");
 
-  const handleImagePreview = () => {
-    const file = watchLogo && watchLogo[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setLogoPreview(null);
-    }
-  };
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
 
-  useEffect(() => {
-    handleImagePreview();
-  }, [watchLogo]);
+  if (!file) {
+    setLogoPreview(null);
+    return;
+  }
 
-  useEffect(() => {
-    // Check if the server URL is local (localhost or 127.x.x.x)
-    const isHosted = !/localhost|127\.\d+\.\d+\.\d+/.test(
-      import.meta.env.VITE_API_URL
-    );
-    setIsHostedServer(isHosted);
-  }, []);
+  // Validate file size
+  if (file.size > 2 * 1024 * 1024) {
+    toast({
+      title: <p className="text-xl font-semibold">File Too Large</p>,
+      description: (
+        <div className="flex gap-x-2 items-center">
+          <h1 className="text-sm font-light">Please select a file smaller than 2MB</h1>
+          <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
+        </div>
+      ),
+      variant: "destructive",
+      className: "bg-white border text-black max-w-sm",
+    });
+    e.target.value = ""; // Clear the file input
+    setLogoPreview(null);
+    return;
+  }
+
+  // Validate file type
+  if (!file.type.startsWith("image/")) {
+    toast({
+      title: <p className="text-xl font-semibold">Invalid File Type</p>,
+      description: (
+        <div className="flex gap-x-2 items-center">
+          <h1 className="text-sm font-light">Only image files are allowed</h1>
+          <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
+        </div>
+      ),
+      variant: "destructive",
+      className: "bg-white border text-black max-w-sm",
+    });
+    e.target.value = ""; // Clear the file input
+    setLogoPreview(null);
+    return;
+  }
+
+  // Show preview if valid
+  const reader = new FileReader();
+  reader.onloadend = () => setLogoPreview(reader.result);
+  reader.readAsDataURL(file);
+};
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    // Prepare form data for submission
+
     const formData = new FormData();
     formData.append("companyName", data.companyName);
-    formData.append("companyLogo", data.companyLogo[0]);
+    formData.append("companyLogo", data.companyLogo[0]); // Important: backend expects this exact field
     formData.append("jobRole", data.jobRole);
     formData.append("jobType", data.jobType);
     formData.append("location", data.location);
     formData.append("salary", data.salary);
+
     if (data.tags) {
       formData.append("tags", data.tags);
     }
+
     formData.append("formLink", data.formLink);
+
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/submit-job`, // Remove curly braces here
-        formData
+        `${import.meta.env.VITE_API_URL}/api/submit-job`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required for multer
+          },
+        }
       );
 
       if (response.status === 200) {
-          toast({
-            title: <p className="text-xl font-semibold">Success</p>,
-            description: (
-              <div className="flex gap-x-2 items-center">
-                <h1 className="text-sm font-light">Job added</h1>
-                <i className="fa-solid fa-check text-green-800 text-xl"></i>
-              </div>
-            ),
-            variant: "success",
-            className: "bg-white border text-black max-w-sm",
-          });
-          reset(); // Reset the form here
-          setLogoPreview(null); // Clear the logo preview
-        }
-        
+        toast({
+          title: <p className="text-xl font-semibold">Success</p>,
+          description: (
+            <div className="flex gap-x-2 items-center">
+              <h1 className="text-sm font-light">Job added</h1>
+              <i className="fa-solid fa-check text-green-800 text-xl"></i>
+            </div>
+          ),
+          variant: "success",
+          className: "bg-white border text-black max-w-sm",
+        });
+
+        reset();
+        setLogoPreview(null);
+      }
     } catch (error) {
       toast({
         title: <p className="text-xl font-semibold">Error</p>,
@@ -111,8 +161,9 @@ const Recrute = () => {
               <h1 className="text-sm font-light">Job submission failed</h1>
               <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
             </div>
+
             <p className="text-[0.9vw] font-light">
-              {error.response.data.message}
+              {error?.response?.data?.message}
             </p>
           </>
         ),
@@ -120,7 +171,7 @@ const Recrute = () => {
         className: "bg-white border text-black max-w-sm",
       });
     } finally {
-      setIsSubmitting(false); // Reset submitting state after completion
+      setIsSubmitting(false);
     }
   };
 
@@ -129,21 +180,6 @@ const Recrute = () => {
 
   return (
     <>
-      {isHostedServer && (
-        <div className="w-full bg-red-500 text-white p-[1vw] text-[1vw] text-center z-50 font-light">
-          <h1>Company logo won't work on hosted server.</h1>
-          <p>Only admin can post a job with a company logo because:</p>
-          <ul className="list-disc list-inside mt-[0.5vw] text-left flex justify-around">
-            <li>
-              Free server hosting doesn't allow permanent storage of data.
-            </li>
-            <li>
-              For security reasons, we cannot provide the server with database
-              credentials.
-            </li>
-          </ul>
-        </div>
-      )}
       <main className="w-full flex justify-center overflow-hidden h-[calc(100vh-5.6vw)]">
         <ScrollArea className="h-[calc(100vh-5.6vw)] w-[70%] bg-white">
           <form
@@ -174,9 +210,9 @@ const Recrute = () => {
             </div>
 
             {/* Company Logo */}
-            <div className={`${isHostedServer && 'opacity-40 cursor-not-allowed pointer-events-none' }`}>
+            <div>
               <label htmlFor="companyLogo" className={labelClasses}>
-                Company Logo
+                Company Logo (Max 2MB)
               </label>
               <Input
                 id="companyLogo"
@@ -184,6 +220,7 @@ const Recrute = () => {
                 type="file"
                 accept="image/*"
                 {...register("companyLogo")}
+                onChange={handleFileChange} // Add this line
               />
               {errors.companyLogo && (
                 <p className="text-red-500 text-[0.9vw] mt-1">
