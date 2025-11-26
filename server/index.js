@@ -1,14 +1,10 @@
 const express = require("express");
-const multer = require("multer");
 const cors = require("cors");
-require('dotenv').config(); // Load environment variables from .env file
-const path = require("path");
+require('dotenv').config();
 const mongoose = require("mongoose");
 const Job = require("./models/jobModel");
 const SupportMessage = require("./models/supportMessageModel")
 const compression = require("compression");
-const cloudinary = require("./helper/cloudinary");  
-
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
@@ -39,43 +35,23 @@ mongoose
   });
 
 
-// Multer memory storage
-const storage = multer.memoryStorage();
-// File filter + size like before
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(file.mimetype)) {
-      return cb(new Error("Only JPEG, PNG, WEBP allowed"));
-    }
-    cb(null, true);
-  }
-});
-
-// Route to handle form submission
-app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
+// Route to handle job submission (NO multer, ONLY JSON)
+app.post("/api/submit-job", async (req, res) => {
   try {
-    const { companyName, jobRole, jobType, location, salary, tags, formLink } = req.body;
+    const { 
+      companyName, 
+      companyLogo,   // already a URL from frontend
+      jobRole, 
+      jobType, 
+      location, 
+      salary, 
+      tags, 
+      formLink 
+    } = req.body;
+
+    // Validation
     if (!companyName || !jobRole || !jobType || !location || !salary || !formLink) {
       return res.status(400).json({ message: "Required fields missing" });
-    }
-
-    let companyLogoUrl = null;
-
-    if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "jobsy_logos" },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-      companyLogoUrl = result.secure_url;
     }
 
     const formatData = (str) => str.toLowerCase().replace(/\s+/g, "_");
@@ -86,31 +62,21 @@ app.post("/api/submit-job", upload.single("companyLogo"), async (req, res) => {
       jobType: formatData(jobType),
       location: formatData(location),
       salary: encodeURIComponent(salary),
-      tags: tags ? tags.split(",").map(tag => formatData(tag)) : [],
-      companyLogo: companyLogoUrl,
+      tags: tags ? tags.split(",").map((tag) => formatData(tag)) : [],
+      companyLogo, // directly save Cloudinary URL
       formLink: encodeURIComponent(formLink),
     });
 
     await newJob.save();
-    res.status(200).json({ message: "Job submission successful" });
+    return res.status(200).json({ message: "Job submission successful" });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error submitting job:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
 
-
-// Error handling middleware (optional for handling file type/size errors)
-app.use((err, req, res, next) => {
-  if (err) {
-    console.error(err);
-    res.status(err.status || 500).json({ message: err.message });
-  } else {
-    next();
-  }
-});
 
 // Route to fetch all jobs
 app.get("/api/jobs", async (req, res) => {

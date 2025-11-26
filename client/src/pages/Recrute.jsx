@@ -49,14 +49,11 @@ const Recrute = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset,
   } = useForm({
     resolver: zodResolver(formSchema),
   });
-
-  const watchLogo = watch("companyLogo");
 
   const handleFileChange = (e) => {
   const file = e.target.files[0];
@@ -108,33 +105,51 @@ const Recrute = () => {
   reader.readAsDataURL(file);
 };
 
+// 🌩️ CLOUDINARY UNSIGNED UPLOAD
+  const uploadLogoToCloudinary = async (file) => {
+  if (!file) return null;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // ✅ Use actual environment variables
+  formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_PRESET);
+
+  const uploadRes = await axios.post(
+    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    formData
+  );
+
+  return uploadRes.data.secure_url; // Cloudinary hosted URL
+};
+
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
+     try {
 
-    const formData = new FormData();
-    formData.append("companyName", data.companyName);
-    formData.append("companyLogo", data.companyLogo[0]); // Important: backend expects this exact field
-    formData.append("jobRole", data.jobRole);
-    formData.append("jobType", data.jobType);
-    formData.append("location", data.location);
-    formData.append("salary", data.salary);
+       // 1️⃣ Upload logo to Cloudinary (if selected)
+      let logoUrl = null;
 
-    if (data.tags) {
-      formData.append("tags", data.tags);
-    }
+      if (data.companyLogo && data.companyLogo.length > 0) {
+        logoUrl = await uploadLogoToCloudinary(data.companyLogo[0]);
+      }
 
-    formData.append("formLink", data.formLink);
+    const payload = {
+      companyName: data.companyName,
+      companyLogo: logoUrl,
+      jobRole: data.jobRole,
+      jobType: data.jobType,
+      location: data.location,
+      salary: data.salary,
+      formLink: data.formLink,
+      ...(data.tags ? { tags: data.tags } : {}), // only include tags if it exists
+    };
 
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/submit-job`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Required for multer
-          },
-        }
-      );
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/submit-job`,
+      payload
+    );
 
       if (response.status === 200) {
         toast({

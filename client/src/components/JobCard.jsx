@@ -78,7 +78,7 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
             </p>
           </header>
 
-          <div className="h-[3.33vw] w-[3.33vw] rounded-full">
+          <div className="h-[3.33vw] w-[3.33vw] text-center rounded-full">
             {job.companyLogo ? (
               <img
                 src={job.companyLogo}
@@ -91,16 +91,18 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
           </div>
         </div>
 
-        <div className="flex px-[1.2vw] mt-[1.2vw] gap-[0.4vw] text-[0.8vw] flex-wrap">
-          {job.tags.map((tag, index) => (
-            <p
-              key={index}
-              className="border rounded-xl px-[0.5vw] py-[0.25vw] h-fit border-black"
-            >
-              #{tag}
-            </p>
-          ))}
-        </div>
+        {job.tags && job.tags.length > 0 && (
+          <div className="flex px-[1.2vw] mt-[1.2vw] gap-[0.4vw] text-[0.8vw] flex-wrap">
+            {job.tags.map((tag, index) => (
+              <p
+                key={index}
+                className="border rounded-xl px-[0.5vw] py-[0.25vw] h-fit border-black"
+              >
+                #{tag}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="px-[0.5vw] py-[0.9vw] flex items-center justify-between text-[1.15vw]">
@@ -120,7 +122,7 @@ const JobCard = ({ job, border, fetchSavedJobs }) => {
         </SignedIn>
 
         <SignedOut>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button className="rounded-xl Poppins text-[1vw]">Apply</Button>
           </DialogTrigger>
         </SignedOut>
