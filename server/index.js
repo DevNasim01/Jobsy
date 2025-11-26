@@ -12,13 +12,22 @@ const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
 app.use(compression());
 
 const corsConfig = {
-  origin: "*",
-  methods: ["GET", "POST"],
+  origin: [
+    "https://jobsy-mauve.vercel.app", // Your frontend domain
+    "https://jobsy-azure.vercel.app", // Your backend domain
+    "http://localhost:3000", // for local development
+    "http://localhost:5173" // Vite default port
+  ],
+  methods: ["GET", "POST", "OPTIONS"], // Add OPTIONS
   credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
 }
 
-app.use(express.json());
 app.use(cors(corsConfig));
+
+// Explicitly handle preflight for all routes
+app.options('*', cors(corsConfig));
+app.use(express.json());
 // Middleware to parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
 
