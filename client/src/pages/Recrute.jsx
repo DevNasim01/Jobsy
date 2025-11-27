@@ -9,16 +9,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 
 // Zod schema for form validation
+// Zod schema for form validation with max lengths
 const formSchema = z.object({
-  companyName: z.string().min(1, "Company name is required"),
+  companyName: z
+    .string()
+    .min(1, "Company name is required")
+    .max(30, "Company name must be at most 30 characters"),
   companyLogo: z
     .any()
     .optional()
     .refine(
       (files) => {
-        if (!files || files.length === 0) return true; // Optional field
+        if (!files || files.length === 0) return true;
         const file = files[0];
-        return file.size <= 2 * 1024 * 1024; // 2MB limit
+        return file.size <= 2 * 1024 * 1024;
       },
       { message: "File size must be less than 2MB" }
     )
@@ -30,16 +34,32 @@ const formSchema = z.object({
       },
       { message: "Only image files are allowed" }
     ),
-  jobRole: z.string().min(1, "Job role is required"),
-  jobType: z.string().min(1, "Job type is required"),
-  location: z.string().min(1, "Location is required"),
-  salary: z.number().min(1, "Salary must be a positive number"),
-  tags: z.string().optional(),
+  jobRole: z
+    .string()
+    .min(1, "Job role is required")
+    .max(30, "Job role must be at most 30 characters"),
+  jobType: z
+    .string()
+    .min(1, "Job type is required")
+    .max(20, "Job type must be at most 20 characters"),
+  location: z
+    .string()
+    .min(1, "Location is required")
+    .max(40, "Location must be at most 40 characters"),
+  salary: z
+    .number({ invalid_type_error: "Salary must be a number" })
+    .min(1, "Salary must be positive")
+    .max(9999999999, "Salary too high"),
   formLink: z
     .string()
     .url("Must be a valid URL")
-    .min(1, "Apply link is required"),
+    .max(200, "URL must be at most 200 characters"),
+  tags: z
+    .array(z.string().max(15, "Each tag must be at most 15 characters"))
+    .max(2, "Maximum 2 tags allowed")
+    .optional(),
 });
+
 
 const Recrute = () => {
   const [logoPreview, setLogoPreview] = useState(null);
@@ -56,100 +76,102 @@ const Recrute = () => {
   });
 
   const handleFileChange = (e) => {
-  const file = e.target.files[0];
+    const file = e.target.files[0];
 
-  if (!file) {
-    setLogoPreview(null);
-    return;
-  }
+    if (!file) {
+      setLogoPreview(null);
+      return;
+    }
 
-  // Validate file size
-  if (file.size > 2 * 1024 * 1024) {
-    toast({
-      title: <p className="text-xl font-semibold">File Too Large</p>,
-      description: (
-        <div className="flex gap-x-2 items-center">
-          <h1 className="text-sm font-light">Please select a file smaller than 2MB</h1>
-          <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
-        </div>
-      ),
-      variant: "destructive",
-      className: "bg-white border text-black max-w-sm",
-    });
-    e.target.value = ""; // Clear the file input
-    setLogoPreview(null);
-    return;
-  }
+    // Validate file size
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: <p className="text-xl font-semibold">File Too Large</p>,
+        description: (
+          <div className="flex gap-x-2 items-center">
+            <h1 className="text-sm font-light">
+              Please select a file smaller than 2MB
+            </h1>
+            <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
+          </div>
+        ),
+        variant: "destructive",
+        className: "bg-white border text-black max-w-sm",
+      });
+      e.target.value = ""; // Clear the file input
+      setLogoPreview(null);
+      return;
+    }
 
-  // Validate file type
-  if (!file.type.startsWith("image/")) {
-    toast({
-      title: <p className="text-xl font-semibold">Invalid File Type</p>,
-      description: (
-        <div className="flex gap-x-2 items-center">
-          <h1 className="text-sm font-light">Only image files are allowed</h1>
-          <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
-        </div>
-      ),
-      variant: "destructive",
-      className: "bg-white border text-black max-w-sm",
-    });
-    e.target.value = ""; // Clear the file input
-    setLogoPreview(null);
-    return;
-  }
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: <p className="text-xl font-semibold">Invalid File Type</p>,
+        description: (
+          <div className="flex gap-x-2 items-center">
+            <h1 className="text-sm font-light">Only image files are allowed</h1>
+            <i className="fa-solid fa-exclamation-triangle text-red-800 text-xl"></i>
+          </div>
+        ),
+        variant: "destructive",
+        className: "bg-white border text-black max-w-sm",
+      });
+      e.target.value = ""; // Clear the file input
+      setLogoPreview(null);
+      return;
+    }
 
-  // Show preview if valid
-  const reader = new FileReader();
-  reader.onloadend = () => setLogoPreview(reader.result);
-  reader.readAsDataURL(file);
-};
+    // Show preview if valid
+    const reader = new FileReader();
+    reader.onloadend = () => setLogoPreview(reader.result);
+    reader.readAsDataURL(file);
+  };
 
-// 🌩️ CLOUDINARY UNSIGNED UPLOAD
+  // 🌩️ CLOUDINARY UNSIGNED UPLOAD
   const uploadLogoToCloudinary = async (file) => {
-  if (!file) return null;
+    if (!file) return null;
 
-  const formData = new FormData();
-  formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-  // ✅ Use actual environment variables
-  formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_PRESET);
+    // ✅ Use actual environment variables
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_PRESET);
 
-  const uploadRes = await axios.post(
-    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-    formData
-  );
+    const uploadRes = await axios.post(
+      `https://api.cloudinary.com/v1_1/${
+        import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+      }/image/upload`,
+      formData
+    );
 
-  return uploadRes.data.secure_url; // Cloudinary hosted URL
-};
-
+    return uploadRes.data.secure_url; // Cloudinary hosted URL
+  };
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-     try {
-
-       // 1️⃣ Upload logo to Cloudinary (if selected)
+    try {
+      // 1️⃣ Upload logo to Cloudinary (if selected)
       let logoUrl = null;
 
       if (data.companyLogo && data.companyLogo.length > 0) {
         logoUrl = await uploadLogoToCloudinary(data.companyLogo[0]);
       }
 
-    const payload = {
-      companyName: data.companyName,
-      companyLogo: logoUrl,
-      jobRole: data.jobRole,
-      jobType: data.jobType,
-      location: data.location,
-      salary: data.salary,
-      formLink: data.formLink,
-      ...(data.tags ? { tags: data.tags } : {}), // only include tags if it exists
-    };
+      const payload = {
+        companyName: data.companyName,
+        companyLogo: logoUrl,
+        jobRole: data.jobRole,
+        jobType: data.jobType,
+        location: data.location,
+        salary: data.salary,
+        formLink: data.formLink,
+        ...(tags.length > 0 ? { tags: tags.join(", ") } : {}),
+      };
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/submit-job`,
-      payload
-    );
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/submit-job`,
+        payload
+      );
 
       if (response.status === 200) {
         toast({
@@ -186,8 +208,32 @@ const Recrute = () => {
         className: "bg-white border text-black max-w-sm",
       });
     } finally {
+      setTags([]);
+      setTagInput("");
       setIsSubmitting(false);
     }
+  };
+
+  // TAG SYSTEM (same logic as Sidebar)
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState([]);
+
+  const handleTagInputChange = (e) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleAddTag = () => {
+    const formatted = tagInput.trim().replace(/\s+/g, "_");
+
+    if (formatted && !tags.includes(formatted) && tags.length < 2) {
+      setTags([...tags, formatted]);
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (index) => {
+    const newTags = tags.filter((_, i) => i !== index);
+    setTags(newTags);
   };
 
   const labelClasses = "block text-[1vw] font-medium leading-loose Poppins";
@@ -331,17 +377,41 @@ const Recrute = () => {
             </div>
 
             {/* Tags */}
-            <div>
-              <label htmlFor="tags" className={labelClasses}>
-                Tags (optional)
-              </label>
+            {/* TAG INPUT FIELD */}
+            <label className={labelClasses}>Tags (max 5)</label>
+
+            <div className="flex items-center space-x-[0.5vw]">
               <Input
-                id="tags"
-                className={inputClasses}
                 type="text"
-                {...register("tags")}
-                placeholder="Enter tags (optional)"
+                placeholder="Add tag"
+                className="Montserrat"
+                value={tagInput}
+                onChange={handleTagInputChange}
+                disabled={tags.length >= 5}
               />
+              <Button
+                type="button"
+                className="Montserrat"
+                onClick={handleAddTag}
+                disabled={tags.length >= 5}
+              >
+                +
+              </Button>
+            </div>
+
+            {/* Show tag chips */}
+            <div className="mt-[0.5vw] flex gap-[0.8vw] flex-wrap">
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-zinc-300 p-[0.5vw] rounded-md flex items-center gap-x-[0.5vw] text-[0.9vw] font-medium"
+                >
+                  <p>{tag}</p>
+                  <button type="button" onClick={() => handleRemoveTag(index)}>
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                </span>
+              ))}
             </div>
 
             <div>
