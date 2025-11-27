@@ -223,13 +223,31 @@ const Recrute = () => {
   };
 
   const handleAddTag = () => {
-    const formatted = tagInput.trim().replace(/\s+/g, "_");
+  const trimmed = tagInput.trim();
+  if (!trimmed) return;
 
-    if (formatted && !tags.includes(formatted) && tags.length < 2) {
-      setTags([...tags, formatted]);
-      setTagInput("");
-    }
-  };
+  if (trimmed.length > 15) {
+    toast({
+      title: "Tag Too Long",
+      description: "Each tag can be at most 15 characters",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  if (tags.length >= 5) {
+    toast({
+      title: "Maximum tags reached",
+      description: "You can only add 5 tags",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  setTags([...tags, trimmed]);
+  setTagInput("");
+};
+
 
   const handleRemoveTag = (index) => {
     const newTags = tags.filter((_, i) => i !== index);
@@ -378,7 +396,7 @@ const Recrute = () => {
 
             {/* Tags */}
             {/* TAG INPUT FIELD */}
-            <label className={labelClasses}>Tags (max 5)</label>
+            <label className={labelClasses}>Tags (max 2)</label>
 
             <div className="flex items-center space-x-[0.5vw]">
               <Input
@@ -387,13 +405,13 @@ const Recrute = () => {
                 className="Montserrat"
                 value={tagInput}
                 onChange={handleTagInputChange}
-                disabled={tags.length >= 5}
+                disabled={tags.length >= 2}
               />
               <Button
                 type="button"
                 className="Montserrat"
                 onClick={handleAddTag}
-                disabled={tags.length >= 5}
+                disabled={tags.length >= 2}
               >
                 +
               </Button>
