@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
+import { SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
+import { DialogTrigger } from "@/components/ui/dialog";
 
 // Zod schema for form validation
 // Zod schema for form validation with max lengths
@@ -451,7 +453,8 @@ const Recrute = () => {
             </div>
 
             {/* Submit Button */}
-            <Button
+            <SignedIn>
+              <Button
               variant="outline"
               type="submit"
               disabled={isSubmitting} // Disable button while submitting
@@ -461,6 +464,18 @@ const Recrute = () => {
             >
               {isSubmitting ? "Processing..." : "Submit"} {/* Dynamic label */}
             </Button>
+            </SignedIn>
+
+            <SignedOut>
+            <DialogTrigger asChild>
+<Button
+              className="w-full bg-zinc-800 text-white hover:bg-zinc-900 hover:text-white "
+              >
+                  sign in to continue
+              </Button>
+            </DialogTrigger>
+              
+            </SignedOut>
           </form>
         </ScrollArea>
 

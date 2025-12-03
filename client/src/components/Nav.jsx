@@ -58,7 +58,7 @@ function Navbar({ setFilteredJobs }) {
       </SignedOut>
       <SignedIn>
         <div className="p-[0.6vw] border grid place-items-center rounded-full">
-          <UserButton />
+          <UserButton appearance={{elements:{footer:"hidden"}}}/>
         </div>
       </SignedIn>
     </nav>

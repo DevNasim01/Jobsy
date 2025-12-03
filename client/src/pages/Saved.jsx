@@ -79,15 +79,34 @@ const Saved = () => {
 
   return (
     <main className="h-dvh bg-slate-50 w-full px-[5vw] overflow-hidden">
-      <div className="text-[8vw] h-[12vw] flex items-center leading-none gap-x-3 px-[4vw] border-b-2 border-black">
-        <i className="fa-solid fa-mug-hot"></i>
-        <div>
-          <h1 className="text-[2.6vw] font-semibold">Saved items</h1>
-          <p className="text-[1vw] leading-none font-medium">
-            We have got your back.
-          </p>
+      <div className="flex border-b-2 px-[4vw] justify-around gap-10 border-black h-[12vw] items-center ">
+        <div className="text-[8vw] flex items-center leading-none gap-x-3">
+  <i className="fa-solid fa-mug-hot"></i>
+        <div>
+          <h1 className="text-[2.6vw] font-semibold">Saved items</h1>
+          <p className="text-[1vw] leading-none font-medium">
+            We have got your back.
+          </p>
+        </div>
+</div>
+
+
+{/* --- NICE WARNING BOX START --- */}
+      
+        <div className="flex items-start p-4 text-sm text-slate-800 border border-slate-800 rounded-lg bg-slate-200 dark:bg-gray-800 dark:text-slate-700" role="alert">
+          <i className="fa-solid fa-triangle-exclamation text-lg flex-shrink-0 mt-0.5"></i>
+          <div className="ml-3 font-medium Montserrat">
+            <span className="font-bold Poppins">Important Note:</span> Your saved jobs are stored locally in your **browser&apos;s storage**.
+            <ul className="mt-1.5 ml-4 list-disc list-inside">
+              <li>**Logging in/out** will **not** affect this list.</li>
+              <li>Clearing your **browser cache** or using a different **device** *will* remove the saved items.</li>
+            </ul>
+          </div>
         </div>
-      </div>
+      
+      </div>
+
+      
 
       {loading ? (
         <div className="w-full flex items-center flex-col z-10 gap-2 mt-[10vw]">

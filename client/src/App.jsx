@@ -25,7 +25,7 @@ function App() {
     loadingBarRef.current?.continuousStart(); // Start progress bar
     const timer = setTimeout(() => {
       loadingBarRef.current?.complete(); // Complete progress bar after a short delay
-    }, 500); // Adjust the delay if needed
+    }, 1000); // Adjust the delay if needed
     return () => clearTimeout(timer); // Cleanup timer
   }, [location]);
 
