@@ -89,6 +89,7 @@ const SideBar = ({ setTages, setLoading }) => {
     { id: "Distent_work", label: "Distent work" },
   ];
 
+  const currentYear = new Date().getFullYear();
   return (
     <section className="h-[calc(100vh-12.22vw)] w-[28vw]">
       <ScrollArea className="h-full relative">
@@ -157,10 +158,9 @@ const SideBar = ({ setTages, setLoading }) => {
 
           <div className="border-t mt-[1.2vw] py-[0.5vw] text-center text-[1.2vw] font-mono">
             <h1 className="px-[0.5vw] flex gap-[0.4vw] items-center justify-center text-[0.9vw]">
-              2024 <br />
-              <i className="fa-regular fa-copyright"></i>All rights reserved.
-            </h1>
-              <a href="https://devnasim.me" target="_blank">-- dev.nasim <i className="fa-solid fa-globe"></i></a>
+  {currentYear} <i className="fa-regular fa-copyright"></i> All rights reserved.
+</h1>
+              <a href="https://dev-nasim.vercel.app" target="_blank">-- dev.nasim <i className="fa-solid fa-globe"></i></a>
             
           </div>
         </div>
